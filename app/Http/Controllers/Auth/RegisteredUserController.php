@@ -9,13 +9,13 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\Rules;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
     /**
-     * Display the registration view.
+     * Affiche la page d'inscription.
      */
     public function create(): View
     {
@@ -23,30 +23,26 @@ class RegisteredUserController extends Controller
     }
 
     /**
-     * Handle an incoming registration request.
-     *
-     * @throws \Illuminate\Validation\ValidationException
+     * Traite l'inscription.
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
-            'username' => ['required', 'string', 'max:255', 'unique:'.User::class],
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
-            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        $validated = $request->validate([
+            'name'     => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'max:50', 'alpha_dash', 'unique:users,username'],
+            'email'    => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:users,email'],
+            'password' => [Password::defaults()],
         ]);
 
         $user = User::create([
-            'username' => $request->username,
-            'name' => $request->name,
-            'email' => $request->email,
+            'name'     => $validated['name'],
+            'username' => $validated['username'],
+            'email'    => $validated['email'],
             'password' => Hash::make($request->password),
         ]);
 
-        event(new Registered($user));
-
-        Auth::login($user);
-
-        return redirect(route('dashboard', absolute: false));
+            event(new Registered($user));
+            Auth::login($user);
+            return redirect()->route('home');
     }
 }
