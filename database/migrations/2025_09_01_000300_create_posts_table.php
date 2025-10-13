@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Schema;
             Schema::create('posts', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-                $table->string('title',255);
+                $table->string('titre',255);
                 $table->text('texte')->nullable();
 
                 $table->string('media_disk',75)->default('public');
