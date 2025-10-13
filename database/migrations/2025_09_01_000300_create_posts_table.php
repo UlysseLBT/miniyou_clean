@@ -18,8 +18,8 @@ use Illuminate\Support\Facades\Schema;
                 $table->unsignedBigInteger('media_size')->nullable();
                 $table->string('media_original_name',255)->nullable();
 
-                $table->timestamps('created_at')->useCurrent();
-                $table->timestamps('updated_at')->useCurrent()->useCurrentOnUpdate();
+                $table->timestamp('created_at')->useCurrent();
+                $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             });
             
         }
