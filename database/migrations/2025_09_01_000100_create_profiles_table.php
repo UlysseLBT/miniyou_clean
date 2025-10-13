@@ -9,13 +9,14 @@ public function up(): void {
 Schema::create('profiles', function (Blueprint $table) {
 $table->id();
 $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-$table->string('display_name')->nullable();
-$table->string('avatar_path')->nullable();
+$table->string('display_name', 255)->nullable();
+$table->string('avatar_path', 255)->nullable();
 $table->text('bio')->nullable();
-$table->string('website')->nullable();
-$table->string('twitter')->nullable();
-$table->string('instagram')->nullable();
-$table->timestamps();
+$table->string('website', 255)->nullable();
+$table->string('twitter', 255)->nullable();
+$table->string('instagram', 255)->nullable();
+$table->timestamps('created_at')->nullable();
+$table->timestamps('updated_at')->nullable();
 });
 }
 public function down(): void { Schema::dropIfExists('profiles'); }

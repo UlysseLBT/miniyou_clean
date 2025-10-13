@@ -11,7 +11,8 @@ $table->id();
 $table->foreignId('user_id')->constrained()->cascadeOnDelete();
 $table->text('body');
 $table->foreignId('media_id')->nullable()->constrained('media')->nullOnDelete();
-$table->timestamps();
+$table->timestamps('created_at')->nullable();
+$table->timestamps('updated_at')->nullable();
 });
 }
 public function down(): void { Schema::dropIfExists('posts'); }
