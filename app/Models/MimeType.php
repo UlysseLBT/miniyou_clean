@@ -4,10 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Mime extends Model
+class MimeType extends Model
 {
-    // Car la table s'appelle 'mime' (singulier)
-    protected $table = 'mime';
+
 
     protected $fillable = [
         'type',

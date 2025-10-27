@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('mime', function (Blueprint $table) {
+        Schema::create('mime_types', function (Blueprint $table) {
             $table->id();
 
             // ex: image / video / audio / application
@@ -37,6 +37,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('mime');
+        Schema::dropIfExists('mime_types');
     }
 };
