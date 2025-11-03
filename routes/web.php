@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\ContactController;
 
 Route::get('/', fn () => view('welcome'))->name('home');
 
@@ -20,6 +21,12 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/profile', [ProfileController::class,'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class,'update'])->name('profile.update');
-});
+
+    Route::middleware('auth')->group(function () {
+    Route::get('/contact', [ContactController::class, 'show'])->name('contact.show');
+    Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
+    });
+
 
 require __DIR__.'/auth.php';
+});

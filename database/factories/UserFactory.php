@@ -18,9 +18,9 @@ class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'username' => fake()->unique()->userName(),
-            'email' => $email,
+            'email' => fake()->unique()->safeEmail(), // <= unique
             'email_verified_at' => now(),
-            'password' => bcrypt('password'), // ou Hash::make(...)
+            'password' => bcrypt('password'),
             'remember_token' => Str::random(10),
         ];
     }

@@ -9,12 +9,20 @@ use App\Models\User;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
+        // utilisateurs aléatoires (avec emails uniques via la factory)
+        User::factory(5)->create();
 
-        User::factory(20)->create();
+        // admin idempotent
+        User::updateOrCreate(
+            ['email' => 'admin@example.com'],     // critère d'unicité
+            [
+                'name' => 'Admin',
+                'username' => 'admin',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password'),
+            ]
+        );
     }
 }

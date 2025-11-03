@@ -1,3 +1,53 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* === Thème (couleurs) === */
+:root{
+  /* Vert accent > tu peux changer ici */
+  --accent: #60773c;
+  --accent-600: #4f612f;
+  --accent-700: #3f4d26;
+}
+
+/* === Réglages de base === */
+@layer base {
+  body { @apply bg-gray-100 text-gray-900 antialiased; }
+  h1 { @apply text-2xl sm:text-3xl font-semibold; }
+  h2 { @apply text-xl sm:text-2xl font-semibold; }
+}
+
+/* === Composants utilitaires === */
+@layer components {
+  /* Container de page */
+  .container-page { @apply max-w-5xl mx-auto px-4 sm:px-6 lg:px-8; }
+
+  /* Cartes */
+  .card { @apply bg-white rounded-lg shadow border border-gray-200; }
+  .card-body { @apply p-6; }
+
+  /* Labels + champs de formulaire */
+  .label   { @apply block text-sm font-medium text-gray-700; }
+  .input   { @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm
+                    focus:border-[color:var(--accent)]
+                    focus:ring-2 focus:ring-[color:var(--accent)] focus:ring-offset-0; }
+  .textarea{ @apply mt-1 block w-full rounded-md border-gray-300 shadow-sm min-h-[10rem]
+                    focus:border-[color:var(--accent)]
+                    focus:ring-2 focus:ring-[color:var(--accent)]; }
+
+  /* Boutons */
+  .btn        { @apply inline-flex items-center justify-center rounded-md px-4 py-2
+                        text-sm font-medium shadow-sm focus:outline-none focus:ring-2; }
+  .btn-accent { color:#fff; background:var(--accent); }
+  .btn-accent:hover { background:var(--accent-600); }
+  .btn-accent:focus { box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--accent); }
+
+  /* Liens de nav */
+  .nav-link        { @apply inline-flex items-center px-3 py-2 text-sm font-medium
+                             text-gray-600 hover:text-gray-900; }
+  /* Actif : style carré + bordure verte uniforme */
+  .nav-link-active { @apply text-gray-900 rounded-none; border:2px solid var(--accent); }
+
+  /* Sécurité logo nav (évite le SVG géant sans toucher ailleurs) */
+  .nav-logo > svg { width:2rem; height:2rem; display:block; }
+}
