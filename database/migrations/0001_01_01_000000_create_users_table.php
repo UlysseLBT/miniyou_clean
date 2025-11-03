@@ -13,18 +13,30 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+
+            // Nom + pseudo unique optionnel (évite l'erreur 1364)
             $table->string('name');
+            $table->string('username')->nullable()->unique()->after('name');
+
+            // Auth & profil
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            // Métadonnées de profil
             $table->string('display_name')->nullable();
             $table->string('avatar_path')->nullable();
             $table->text('bio')->nullable();
             $table->string('website')->nullable();
             $table->string('twitter')->nullable();
             $table->string('instagram')->nullable();
+
+            // Tokens & timestamps
             $table->rememberToken();
             $table->timestamps();
+
+            // Index utiles (facultatif mais pratique)
+            $table->index(['name']);
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
@@ -48,8 +60,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
-        Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
+        Schema::dropIfExists('password_reset_tokens');
+        Schema::dropIfExists('users');
     }
 };

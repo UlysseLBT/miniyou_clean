@@ -7,6 +7,8 @@ use App\Http\Controllers\ProfileController;
 
 Route::get('/', fn () => view('welcome'))->name('home');
 
+Route::get('/dashboard', fn () => view('dashboard'))->middleware(['auth'])->name('dashboard');
+
 Route::middleware('auth')->group(function () {
     Route::get('/posts', [PostController::class,'index'])->name('posts.index');
     Route::post('/posts', [PostController::class,'store'])->name('posts.store');

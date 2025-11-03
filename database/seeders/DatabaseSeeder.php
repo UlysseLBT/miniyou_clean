@@ -14,16 +14,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Admin par défaut
-        User::updateOrCreate(
-            ['email' => 'admin@example.com'],
-            [
-                'name'              => 'Admin',
-                'password'          => Hash::make('adminadmin'),
-                'role'              => 'admin',     // nécessite la migration role
-                'email_verified_at' => now(),
-            ]
-        );
 
         User::factory(20)->create();
     }
