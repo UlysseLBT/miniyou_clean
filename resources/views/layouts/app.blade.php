@@ -27,7 +27,8 @@
         @endif
 
         <main>
-            @yield('content')
+            {{ $slot }}
+            {{-- @yield('content') --}}
         </main>
     </div>
 </body>

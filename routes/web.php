@@ -24,8 +24,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/media', [MediaController::class,'store'])->name('media.store');
     Route::delete('/media/{media}', [MediaController::class,'destroy'])->name('media.destroy');
 
-    Route::get('/profile', [ProfileController::class,'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class,'update'])->name('profile.update');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 
