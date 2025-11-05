@@ -1,31 +1,46 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
+class ProfileController extends Controller
+{
+    public function edit(Request $request)
+    {
+        return view('profile.edit', [
+            'user' => $request->user(),
+        ]);
+    }
 
-class ProfileController extends Controller {
-public function edit(){
-$user = Auth::user();
-$profile = $user->profile()->firstOrCreate([]);
-return view('profile.edit', compact('user','profile'));
-}
-public function update(Request $request){
-$data = $request->validate([
-'display_name' => ['nullable','string','max:100'],
-'bio' => ['nullable','string','max:1000'],
-'website' => ['nullable','url'],
-'twitter' => ['nullable','string','max:50'],
-'instagram' => ['nullable','string','max:50'],
-'avatar' => ['nullable','image','max:4096'],
-]);
-$user = $request->user();
-$profile = $user->profile()->firstOrCreate([]);
-if($request->hasFile('avatar')){
-$path = $request->file('avatar')->store('avatars','public');
-$data['avatar_path'] = $path;
-}
-$profile->update($data);
-return back()->with('status','Profil mis à jour');
-}
+    public function update(Request $request)
+    {
+        $user = $request->user();
+
+        $data = $request->validate([
+            'display_name' => ['nullable','string','max:255'],
+            'bio'          => ['nullable','string','max:2000'],
+            'website'      => ['nullable','url','max:255'],
+            'twitter'      => ['nullable','string','max:255'],
+            'instagram'    => ['nullable','string','max:255'],
+            'avatar'       => ['nullable','image','max:2048'],
+        ]);
+
+        // Upload avatar si présent
+        if ($request->hasFile('avatar')) {
+            $path = $request->file('avatar')->store('avatars', 'public');
+
+            // Supprime l’ancien fichier si besoin
+            if ($user->avatar_path) {
+                Storage::disk('public')->delete($user->avatar_path);
+            }
+
+            $data['avatar_path'] = $path;
+        }
+
+        $user->update($data);
+
+        return back()->with('status', 'Profil mis à jour ✅');
+    }
 }

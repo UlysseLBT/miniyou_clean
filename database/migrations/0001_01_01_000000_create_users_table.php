@@ -16,7 +16,7 @@ return new class extends Migration
 
             // Nom + pseudo unique optionnel (évite l'erreur 1364)
             $table->string('name');
-            $table->string('username')->nullable()->unique();
+            $table->string('username')->nullable()->unique()->after('name');
 
             // Auth & profil
             $table->string('email')->unique();

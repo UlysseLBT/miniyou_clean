@@ -1,40 +1,106 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Mon profil</h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-6">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            @if(session('status'))
-                <div class="mb-4 rounded bg-green-100 p-3 text-green-800">{{ session('status') }}</div>
-            @endif
+@section('header')
+  <h1 class="text-2xl font-semibold">Mon profil</h1>
+@endsection
 
-            <form action="{{ route('profile.update') }}" method="post" enctype="multipart/form-data" class="space-y-4 bg-white p-4 rounded border">
-                @csrf @method('PATCH')
+@section('content')
+<div class="max-w-xl mx-auto p-4 bg-white rounded shadow space-y-6">
 
-                <div>
-                    <label class="block text-sm font-medium">Display name</label>
-                    <input class="mt-1 border rounded p-2 w-full" name="display_name" value="{{ old('display_name',$profile->display_name) }}" />
-                    @error('display_name') <div class="text-red-600 text-sm">{{ $message }}</div> @enderror
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium">Bio</label>
-                    <textarea class="mt-1 border rounded p-2 w-full" name="bio">{{ old('bio',$profile->bio) }}</textarea>
-                    @error('bio') <div class="text-red-600 text-sm">{{ $message }}</div> @enderror
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium">Avatar</label>
-                    <input type="file" name="avatar" class="mt-1" />
-                    @if($profile->avatar_path)
-                        <img src="{{ Storage::url($profile->avatar_path) }}" class="h-20 mt-2 rounded" />
-                    @endif
-                    @error('avatar') <div class="text-red-600 text-sm">{{ $message }}</div> @enderror
-                </div>
-
-                <button class="inline-flex items-center rounded border px-3 py-1">Enregistrer</button>
-            </form>
+    @if (session('status'))
+        <div class="p-3 border border-green-600 bg-green-50 text-green-700 rounded">
+            {{ session('status') }}
         </div>
-    </div>
-</x-app-layout>
+    @endif
+
+    <form action="{{ route('profile.update') }}" method="post" enctype="multipart/form-data" class="space-y-4">
+        @csrf
+        @method('PATCH')
+
+        {{-- Display name --}}
+        <div>
+            <label class="block text-sm font-medium">Display name</label>
+            <input
+                class="mt-1 border rounded p-2 w-full"
+                type="text"
+                name="display_name"
+                value="{{ old('display_name', $user->display_name) }}"
+            >
+            @error('display_name')
+                <div class="text-red-600 text-sm">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- Bio --}}
+        <div>
+            <label class="block text-sm font-medium">Bio</label>
+            <textarea
+                class="mt-1 border rounded p-2 w-full"
+                name="bio"
+                rows="4"
+            >{{ old('bio', $user->bio) }}</textarea>
+            @error('bio')
+                <div class="text-red-600 text-sm">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- Website --}}
+        <div>
+            <label class="block text-sm font-medium">Site web</label>
+            <input
+                class="mt-1 border rounded p-2 w-full"
+                type="url"
+                name="website"
+                value="{{ old('website', $user->website) }}"
+            >
+            @error('website')
+                <div class="text-red-600 text-sm">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- Twitter --}}
+        <div>
+            <label class="block text-sm font-medium">Twitter</label>
+            <input
+                class="mt-1 border rounded p-2 w-full"
+                type="text"
+                name="twitter"
+                value="{{ old('twitter', $user->twitter) }}"
+            >
+            @error('twitter')
+                <div class="text-red-600 text-sm">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- Instagram --}}
+        <div>
+            <label class="block text-sm font-medium">Instagram</label>
+            <input
+                class="mt-1 border rounded p-2 w-full"
+                type="text"
+                name="instagram"
+                value="{{ old('instagram', $user->instagram) }}"
+            >
+            @error('instagram')
+                <div class="text-red-600 text-sm">{{ $message }}</div>
+            @enderror
+        </div>
+
+        {{-- Avatar --}}
+        <div class="space-y-2">
+            <label class="block text-sm font-medium">Avatar</label>
+            @if($user->avatar_path)
+                <img src="{{ asset('storage/'.$user->avatar_path) }}" alt="Avatar" class="h-24 w-24 rounded-full object-cover">
+            @endif
+            <input class="block" type="file" name="avatar" accept="image/*">
+            @error('avatar')
+                <div class="text-red-600 text-sm">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <button class="px-4 py-2 bg-emerald-600 text-white rounded">
+            Enregistrer
+        </button>
+    </form>
+</div>
+@endsection
