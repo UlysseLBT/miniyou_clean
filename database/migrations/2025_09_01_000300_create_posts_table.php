@@ -21,10 +21,9 @@ use Illuminate\Support\Facades\Schema;
                 $table->timestamp('created_at')->useCurrent();
                 $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
             });
-            
         }
-        public function down(): void
-        {
+
+        public function down(): void {
             Schema::dropIfExists('posts');
         }
     };

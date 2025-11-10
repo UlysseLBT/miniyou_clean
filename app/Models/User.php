@@ -9,7 +9,7 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    public function media(){ return $this->hasMany(\App\Models\Media::class); }
+    public function media(){ return $this->hasMany(\App\Models\MimeType::class); }
 
 
     /** @use HasFactory<\Database\Factories\UserFactory> */

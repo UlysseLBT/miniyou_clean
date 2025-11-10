@@ -26,6 +26,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/posts/{post}', [PostController::class,'destroy'])->name('posts.destroy');
 
     Route::get('/media', [MediaController::class,'index'])->name('media.index');
+    Route::get('/media/create', [MediaController::class,'create'])->name('media.create');
     Route::post('/media', [MediaController::class,'store'])->name('media.store');
     Route::delete('/media/{media}', [MediaController::class,'destroy'])->name('media.destroy');
 

@@ -1,34 +1,43 @@
 <?php
 namespace App\Http\Controllers;
-use App\Models\Media;
+
+use App\Models\MimeType;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+
 
 
 class MediaController extends Controller {
-    public function index(Request $request){
-        $items = Media::where('user_id',$request->user()->id)->latest()->paginate(12);
-        return view('media.index', compact('items'));
+    public function index() {
+        $mediaItems = MimeType::orderBy('created_at', 'desc')->paginate(10);
+        return view('media.index', compact('mediaItems'));
     }
-    public function store(Request $request){
-        $data = $request->validate([
-            'file' => ['required','file','max:10240']
+
+    public function store(Request $request) {
+        $request->validate([
+            'file' => 'required|file|max:10240', // Max 10MB
         ]);
-        $file = $data['file'];
-        $path = $file->store('uploads','public');
-        Media::create([
-            'user_id' => $request->user()->id,
-            'disk' => 'public',
-            'path' => $path,
-            'mime' => $file->getClientMimeType(),
-            'size' => $file->getSize(),
-            'original_name' => $file->getClientOriginalName(),
+
+        $path = $request->file('file')->store('media', 'public');
+
+        MimeType::create([
+            'filename' => basename($path),
+            'filepath' => $path,
+            'uploaded_by' => auth()->id(),
         ]);
-        return back()->with('status','Fichier uploadé');
+
+        return redirect()->route('media.index')->with('success', 'Media uploaded successfully.');
     }
-    public function destroy(Request $request, Media $media){
-        $this->authorize('delete',$media);
-        \Storage::disk($media->disk)->delete($media->path);
+
+    public function destroy(Media $media) {
+        // Delete the file from storage
+        Storage::disk('public')->delete($media->filepath);
+
+        // Delete the database record
         $media->delete();
-        return back()->with('status','Supprimé');
+
+        return redirect()->route('media.index')->with('success', 'Media deleted successfully.');
     }
 }
