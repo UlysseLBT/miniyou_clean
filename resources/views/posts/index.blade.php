@@ -1,4 +1,5 @@
-<x-layout>
+@php use Illuminate\Support\Str; @endphp
+<x-app-layout>
   <x-slot name="header">
     <h2 class="font-semibold text-xl text-gray-800 leading-tight">
       {{ __('Posts') }}
@@ -17,7 +18,7 @@
       <div class="bg-white shadow-sm rounded-lg overflow-hidden">
         @foreach($posts as $post)
           <div class="border-b last:border-0 p-4">
-            <h3 class="text-lg font-semibold">{{ $post->title }}</h3>
+            <h3 class="text-lg font-semibold">{{ $posts->title }}</h3>
             <p class="mt-2 text-gray-600">{{ Str::limit($post->content, 150) }}</p>
             <a href="{{ route('posts.show', $post) }}" class="text-blue-500 hover:underline mt-2 inline-block">Read More</a>
           </div>
@@ -29,4 +30,4 @@
       </div>
     </div>
   </div>
-</x-layout>
+</x-app-layout>
