@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // utilisateurs aléatoires (avec emails uniques via la factory)
+
         $this->call(
             UserSeeder::class
         );

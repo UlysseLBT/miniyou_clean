@@ -16,9 +16,9 @@ class UserFactory extends Factory
         $email = fake()->unique()->safeEmail();
         $base = Str::before($email, '@'); // ex: rcartwright
         return [
-            'name' => fake()->name(),
-            'username' => fake()->unique()->userName(),
-            'email' => fake()->unique()->safeEmail(), // <= unique
+            'name' => fake('fr_FR')->name(),
+            'username' => fake('fr_FR')->unique()->userName(),
+            'email' => fake('fr_FR')->unique()->safeEmail(), // <= unique
             'email_verified_at' => now(),
             'password' => bcrypt('password'),
             'remember_token' => Str::random(10),

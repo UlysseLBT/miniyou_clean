@@ -16,6 +16,7 @@ class ProfileController extends Controller
 
     public function update(Request $request)
     {
+
         $user = $request->user();
 
         $data = $request->validate([
@@ -39,7 +40,9 @@ class ProfileController extends Controller
             $data['avatar_path'] = $path;
         }
 
-        $user->update($data);
+        // 2. Mise à jour de l'objet utilisateur
+        $user->fill($data);
+        $user->save();
 
         return back()->with('status', 'Profil mis à jour ✅');
     }

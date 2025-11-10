@@ -16,6 +16,8 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+
+        // admin idempotent
         User::updateOrCreate(
             ['email' => 'admin@example.com'],     // critère d'unicité
             [
