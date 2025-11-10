@@ -4,47 +4,51 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+
 
 class PostController extends Controller
 {
     public function index()
-    {
-        $posts = \App\Models\Post::with('user')->latest()->paginate(10);
-        return view('posts.index', compact('posts'));
+    {  
+        $posts = Post::where('user_id', auth()->id())->latest()->paginate(10);
+        return view('post.index', compact('posts'));
     }
 
     public function store(Request $request)
     {
         $data = $request->validate([
-            'titre' => ['required','string','max:255'],
-            'texte' => ['nullable','string','max:2000'],
-            'media' => ['required','file','max:10240'], // 10MB, obligatoire car media_url NOT NULL
+            'content' => ['required','string','max:280'],
+            'media' => ['nullable','file','max:5120']
         ]);
 
-        $file = $request->file('media');
-        $path = $file->store('post', 'public');
+        $mediaUrl = null;
+        $mediaDisk = null;
+
+        if (isset($data['media'])) {
+            $file = $data['media'];
+            $mediaUrl = $file->store('posts','public');
+            $mediaDisk = 'public';
+        }
 
         Post::create([
-            'user_id'             => $request->user()->id,
-            'titre'               => $data['titre'],
-            'texte'               => $data['texte'] ?? null,
-            'media_disk'          => 'public',
-            'media_url'           => $path, // ex: posts/abc.jpg
-            'media_mime'          => $file->getClientMimeType(),
-            'media_size'          => $file->getSize(),
-            'media_original_name' => $file->getClientOriginalName(),
+            'user_id' => auth()->id(),
+            'content' => $data['content'],
+            'media_url' => $mediaUrl,
+            'media_disk' => $mediaDisk,
         ]);
 
-        return back()->with('status', 'Post publié ✅');
+        return back()->with('status', 'Post créé');
     }
 
     public function destroy(Post $post)
     {
-        abort_unless($post->user_id === auth()->id(), 403);
+        $this->authorize('delete', $post);
 
-        if ($post->media_url && $post->media_disk === 'public') {
-            \Storage::disk('public')->delete($post->media_url);
+        if ($post->media_url) {
+            \Storage::disk($post->media_disk)->delete($post->media_url);
         }
+
         $post->delete();
 
         return back()->with('status', 'Post supprimé');

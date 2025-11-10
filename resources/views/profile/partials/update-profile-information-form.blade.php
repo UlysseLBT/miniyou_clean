@@ -49,29 +49,28 @@
         {{-- Bio --}}
         <div>
             <x-input-label for="bio" :value="__('Bio')" />
-            <x-textarea id="bio" name="bio" rows="5" type="text" class="mt-1 block w-full" :value="old('bio', $user->bio)" autofocus autocomplete="bio" />
+            <x-textarea id="bio" name="bio" rows="5" type="text" class="mt-1 block w-full" :value="old('bio', $user->bio)" autocomplete="bio" />
             <x-input-error class="mt-2" :messages="$errors->get('bio')" />
         </div>
 
         {{-- Website URL --}}
         <div>
             <x-input-label for="website" :value="__('Website ')" />
-            <x-text-input id="website" name="website" type="text" class="mt-1 block w-full" :value="old('website', $user->website)" autofocus autocomplete="website" />
+            <x-text-input id="website" name="website" type="text" class="mt-1 block w-full" :value="old('website', $user->website)" autocomplete="website" />
             <x-input-error class="mt-2" :messages="$errors->get('website')" />
         </div>
 
         {{-- Twitter --}}
         <div>
             <x-input-label for="twitter" :value="__('Twitter')" />
-            <x-text-input id="twitter" name="twitter" type="text" class="mt-1 block w-full" :value="old('twitter', $user->twitter)" autofocus autocomplete="twitter" />
+            <x-text-input id="twitter" name="twitter" type="text" class="mt-1 block w-full" :value="old('twitter', $user->twitter)" autocomplete="twitter" />
             <x-input-error class="mt-2" :messages="$errors->get('twitter')" />
         </div>
 
         {{-- Instagram --}}
         <div>
             <x-input-label for="instagram" :value="__('Instagram')" />
-            <x-text-input id="instagram" name="instagram" type="text" class="mt-1 block w-full" :value="old('instagram', $user->instagram)" autofocus autocomplete="instagram" />
-            <x-input-error class="mt-2" :messages="$errors->get('instagram')" />
+            <x-text-input id="instagram" name="instagram" type="text" class="mt-1 block w-full" :value="old('instagram', $user            <x-input-error class="mt-2" :messages="$errors->get('instagram')" />
         </div>
         
         
