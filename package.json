@@ -1,5 +1,5 @@
 {
-    "$schema": "https://json.schemastore.org/package.json",
+    "$schema": "https://raw.githubusercontent.com/SchemaStore/schemastore/master/src/schemas/json/package.json",
     "private": true,
     "type": "module",
     "scripts": {
