@@ -16,6 +16,15 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->count(100)->create();
+        User::updateOrCreate(
+            ['email' => 'admin@example.com'],     // critère d'unicité
+            [
+                'name' => 'Admin',
+                'username' => 'admin',
+                'email_verified_at' => now(),
+                'password' => Hash::make('password'),
+            ]
+        );
+        User::factory()->count(20)->create();
     }
 }
