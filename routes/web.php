@@ -1,7 +1,6 @@
 <?php
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PostController;
-use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 
@@ -24,11 +23,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
     Route::post('/posts', [PostController::class,'store'])->name('posts.store');
     Route::delete('/posts/{post}', [PostController::class,'destroy'])->name('posts.destroy');
-
-    Route::get('/media', [MediaController::class,'index'])->name('media.index');
-    Route::get('/media/create', [MediaController::class,'create'])->name('media.create');
-    Route::post('/media', [MediaController::class,'store'])->name('media.store');
-    Route::delete('/media/{media}', [MediaController::class,'destroy'])->name('media.destroy');
 
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

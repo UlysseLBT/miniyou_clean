@@ -1,0 +1,192 @@
+/* --------- Page posts globale --------- */
+
+.posts-page {
+    padding: 1.5rem 1rem;
+}
+
+.posts-container {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+/* --------- Header --------- */
+
+.posts-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.posts-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #0f172a; /* slate-900 */
+}
+
+/* --------- Boutons --------- */
+
+.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 1.1rem;
+    border-radius: 9999px;
+    border: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    background-color: #10b981; /* emerald-500 */
+    color: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
+    transition: background-color 0.15s ease, transform 0.1s ease,
+                box-shadow 0.15s ease;
+    text-decoration: none;
+}
+
+.btn-primary:hover {
+    background-color: #059669; /* emerald-600 */
+    transform: translateY(-1px);
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.2);
+}
+
+/* --------- Message de statut --------- */
+
+.status-alert {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    border: 1px solid #bbf7d0; /* green-100 */
+    background-color: #ecfdf5; /* emerald-50 */
+    color: #166534; /* green-700 */
+    font-size: 0.875rem;
+}
+
+/* --------- Cards de posts --------- */
+
+.posts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.post-card {
+    background-color: #ffffff;
+    border-radius: 0.9rem;
+    border: 1px solid #e5e7eb; /* gray-200 */
+    padding: 1rem 1.25rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    transition: box-shadow 0.15s ease, transform 0.1s ease;
+}
+
+.post-card:hover {
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.12);
+    transform: translateY(-1px);
+}
+
+/* Header de la card */
+
+.post-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+}
+
+.post-avatar {
+    display: none;
+}
+
+@media (min-width: 640px) {
+    .post-avatar {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 9999px;
+        background-color: #d1fae5; /* emerald-100 */
+        color: #047857; /* emerald-700 */
+        font-weight: 600;
+        font-size: 0.95rem;
+        flex-shrink: 0;
+    }
+}
+
+.post-header-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.post-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #0f172a;
+    margin: 0;
+}
+
+.post-meta {
+    margin-top: 0.15rem;
+    font-size: 0.75rem;
+    color: #9ca3af; /* gray-400 */
+}
+
+/* Texte */
+
+.post-text {
+    margin-top: 0.4rem;
+    font-size: 0.875rem;
+    color: #4b5563; /* gray-600 */
+}
+
+/* Lien */
+
+.post-link-block {
+    margin-top: 0.4rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.post-url {
+    font-size: 0.85rem;
+    color: #059669; /* emerald-600 */
+    text-decoration: none;
+    word-break: break-all;
+}
+
+.post-url:hover {
+    text-decoration: underline;
+}
+
+.post-domain {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.1rem 0.55rem;
+    border-radius: 9999px;
+    background-color: #f1f5f9; /* slate-100 */
+    color: #64748b; /* slate-500 */
+    font-size: 0.7rem;
+    font-weight: 500;
+}
+
+/* --------- Pied de page / pagination --------- */
+
+.posts-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    gap: 1rem;
+}
+
+.empty-card {
+    background-color: #ffffff;
+    border-radius: 0.9rem;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+    text-align: center;
+    color: #6b7280; /* gray-500 */
+    font-size: 0.9rem;
+}

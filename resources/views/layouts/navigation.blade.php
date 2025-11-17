@@ -17,11 +17,9 @@
                     <!-- Navigation Links -->
                     <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                         <x-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
-                            Vidéos
+                            Posts
                         </x-nav-link>
-                        <x-nav-link :href="route('media.index')" :active="request()->routeIs('media.index')">
-                            Mes Vidéos
-                        </x-nav-link>
+
                         <x-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
                             Mon Profil
                         </x-nav-link>
@@ -81,10 +79,7 @@
         <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
             <div class="pt-2 pb-3 space-y-1">
                 <x-responsive-nav-link :href="route('posts.index')" :active="request()->routeIs('posts.index')">
-                    Vidéos
-                </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('media.index')" :active="request()->routeIs('media.index')">
-                    Mes Vidéos
+                    Posts
                 </x-responsive-nav-link>
                 <x-responsive-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
                     Mon Profil

@@ -4,15 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Storage;
-
 
 class PostController extends Controller
 {
     public function index()
-    {  
-        $posts = Post::where('user_id', auth()->id())->latest()->paginate(10);
+    {
+        // Si tu veux voir uniquement tes posts :
+        // $posts = Post::where('user_id', auth()->id())->latest()->paginate(10);
+
+        // Si tu veux un vrai "fil" avec tous les posts :
+        $posts = Post::with('user')
+            ->latest()
+            ->paginate(10);
+
         return view('posts.index', compact('posts'));
     }
 
@@ -23,41 +27,35 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
+        // Validation des champs du formulaire
         $data = $request->validate([
-            'content' => ['required','string','max:280'],
-            'media' => ['nullable','file','mimes:jpeg,png,jpg,gif','max:5120']
+            'titre' => ['required', 'string', 'max:255'],
+            'texte' => ['nullable', 'string'],
+            'url'   => ['required', 'string', 'max:2048', 'url'],
         ]);
 
-        $mediaUrl = null;
-        $mediaDisk = null;
-
-        if ($request->hasFile('media')) {
-            $file = $request->file('media');
-            $mediaUrl = $file->store('posts', 'public');
-            $mediaDisk = 'public';
-        }
-
+        // Création du post (pas de fichier, juste texte + lien)
         Post::create([
-            'user_id' => auth()->id(),
-            'content' => $data['content'],
-            'media_url' => $mediaUrl,
-            'media_disk' => $mediaDisk,
+            'user_id' => $request->user()->id,
+            'titre'   => $data['titre'],
+            'texte'   => $data['texte'] ?? null,
+            'url'     => $data['url'],
         ]);
 
-        return back()->with('status', 'Post créé');
+        return redirect()
+            ->route('posts.index')
+            ->with('status', 'Post créé');
     }
 
     public function destroy(Post $post)
     {
         $this->authorize('delete', $post);
 
-        if ($post->media_url) {
-            $disk = $post->media_disk ?? 'public';
-            \Storage::disk($disk)->delete($post->media_url);
-        }
-
+        // Plus de fichier à supprimer, juste le post
         $post->delete();
 
-        return back()->with('status', 'Post supprimé');
+        return redirect()
+            ->route('posts.index')
+            ->with('status', 'Post supprimé');
     }
 }

@@ -14,13 +14,15 @@ class Post extends Model
      * @method static \Illuminate\Database\Eloquent\Factories\Factory factory(...$parameters)
      */
 
+    // Colonnes pouvant être remplies en masse
     protected $fillable = [
         'user_id',
-        'content',
-        'media_url',
-        'media_disk',
+        'titre',
+        'texte',
+        'url',      // <- si ta colonne s'appelle bien `url`
     ];
 
+    // Relation : un post appartient à un utilisateur
     public function user()
     {
         return $this->belongsTo(User::class);
