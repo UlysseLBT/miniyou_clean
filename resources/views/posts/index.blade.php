@@ -77,6 +77,7 @@
                                             {{ $post->url }}
                                         </a>
 
+
                                         @if($host)
                                             <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5
                                                          text-[11px] font-medium text-slate-600">
@@ -85,6 +86,9 @@
                                         @endif
                                     </div>
                                 @endif
+                                <a href="{{ route('posts.show', $post) }}" class="post-url" style="margin-top:.3rem;display:inline-block;">
+                                    Voir le post
+                                </a>
                             </div>
                         </div>
                     </article>

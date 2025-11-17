@@ -49,13 +49,19 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
-        $this->authorize('delete', $post);
-
-        // Plus de fichier à supprimer, juste le post
-        $post->delete();
-
-        return redirect()
-            ->route('posts.index')
-            ->with('status', 'Post supprimé');
+        // Vérifie que l'utilisateur connecté est bien l'auteur du post
+        if ($post->user_id !== auth()->id()) {
+            abort(403); // Interdit
+            }
+             //On supprime simplement le post
+             $post->delete();
+             return redirect()
+             ->route('posts.index')
+             ->with('status', 'Post supprimé');
+}
+    public function show(Post $post)
+    {
+        $post->load('user');
+        return view('posts.show', compact('post'));
     }
 }
