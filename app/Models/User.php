@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\Community;
 
 class User extends Authenticatable
 {
@@ -45,5 +46,16 @@ protected $fillable = ['name','username','email','password','display_name','avat
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    public function communitiesOwned()
+    {
+        return $this->hasMany(Community::class, 'owner_id');
+    }
+
+    public function communities()
+    {
+        return $this->belongsToMany(Community::class)
+            ->withTimestamps()
+            ->withPivot('role');
     }
 }
