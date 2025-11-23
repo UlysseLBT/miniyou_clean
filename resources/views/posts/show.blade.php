@@ -1,9 +1,15 @@
 @php
     use Illuminate\Support\Str;
 
-    $user = $post->user;
+    $user    = $post->user;
     $initial = $user ? Str::upper(Str::substr($user->name, 0, 1)) : 'U';
-    $host = $post->url ? parse_url($post->url, PHP_URL_HOST) : null;
+    $host    = $post->url ? parse_url($post->url, PHP_URL_HOST) : null;
+
+    $likesCount     = $post->likes->count() ?? 0;
+    $commentsCount  = $post->comments->count() ?? 0;
+    $userHasLiked   = auth()->check()
+        ? $post->likes->contains('user_id', auth()->id())
+        : false;
 @endphp
 
 <x-app-layout>
@@ -24,6 +30,7 @@
     <div class="py-8">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
 
+            {{-- Carte du post --}}
             <article class="bg-white shadow-sm rounded-xl p-6 sm:p-7 border border-slate-100">
                 <div class="flex items-start gap-4">
 
@@ -76,9 +83,114 @@
                 </div>
             </article>
 
-            {{-- Actions en bas --}}
+            {{-- Zone Like + compteurs --}}
+            <div class="mt-4 flex items-center justify-between flex-wrap gap-3">
+                <div class="flex items-center gap-4">
+                    @auth
+                        <form method="POST" action="{{ route('posts.like', $post) }}">
+                            @csrf
+                            <button type="submit"
+                                    class="inline-flex items-center rounded-full px-4 py-2 text-sm font-medium
+                                           {{ $userHasLiked ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700' }}
+                                           hover:bg-emerald-600 hover:text-white transition">
+                                @if ($userHasLiked)
+                                    ❤️
+                                    <span class="ml-2">Je n'aime plus</span>
+                                @else
+                                    🤍
+                                    <span class="ml-2">J'aime</span>
+                                @endif
+
+                                <span class="ml-3 text-xs opacity-80">
+                                    {{ $likesCount }} like{{ $likesCount > 1 ? 's' : '' }}
+                                </span>
+                            </button>
+                        </form>
+                    @else
+                        <p class="text-xs text-slate-500">
+                            <a href="{{ route('login') }}" class="text-emerald-600 hover:underline">Connecte-toi</a>
+                            pour liker ce post.
+                        </p>
+                    @endauth
+                </div>
+
+                <p class="text-xs text-slate-500">
+                    {{ $commentsCount }} commentaire{{ $commentsCount > 1 ? 's' : '' }}
+                </p>
+            </div>
+
+            {{-- Commentaires --}}
+            <div class="mt-8">
+                <h2 class="text-lg font-semibold text-slate-900 mb-3">
+                    Commentaires ({{ $commentsCount }})
+                </h2>
+
+                {{-- Formulaire de commentaire --}}
+                @auth
+                    <form method="POST" action="{{ route('posts.comments.store', $post) }}"
+                          class="mb-6 bg-white border border-slate-100 rounded-xl p-4 shadow-sm">
+                        @csrf
+
+                        <textarea name="body" rows="3"
+                                  class="w-full text-sm rounded-lg border-slate-200 focus:border-emerald-500 focus:ring-emerald-500"
+                                  placeholder="Écrire un commentaire..." required>{{ old('body') }}</textarea>
+
+                        @error('body')
+                            <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
+                        @enderror
+
+                        <div class="mt-3 flex justify-end">
+                            <button type="submit"
+                                    class="inline-flex items-center rounded-full px-4 py-2 text-sm font-medium
+                                           bg-emerald-500 text-white hover:bg-emerald-600">
+                                Publier
+                            </button>
+                        </div>
+                    </form>
+                @else
+                    <p class="text-sm text-slate-500 mb-4">
+                        <a href="{{ route('login') }}" class="text-emerald-600 hover:underline">Connecte-toi</a>
+                        pour laisser un commentaire.
+                    </p>
+                @endauth
+
+                {{-- Liste des commentaires --}}
+                <div class="space-y-4">
+                    @forelse ($post->comments as $comment)
+                        <div class="bg-white border border-slate-100 rounded-xl p-4 shadow-sm">
+                            <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                <span class="font-medium text-slate-600">
+                                    {{ $comment->user->name }}
+                                </span>
+                                <span>{{ $comment->created_at->diffForHumans() }}</span>
+                            </div>
+
+                            <p class="text-sm text-slate-700 whitespace-pre-wrap">
+                                {{ $comment->body }}
+                            </p>
+
+                            @if (auth()->id() === $comment->user_id)
+                                <form method="POST" action="{{ route('comments.destroy', $comment) }}"
+                                      class="mt-2 text-right">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="text-xs text-slate-400 hover:text-red-500">
+                                        Supprimer
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    @empty
+                        <p class="text-sm text-slate-500">
+                            Aucun commentaire pour l'instant.
+                        </p>
+                    @endforelse
+                </div>
+            </div>
+
+            {{-- Actions en bas : suppression du post --}}
             @can('delete', $post)
-                <div class="mt-4 flex justify-end">
+                <div class="mt-6 flex justify-end">
                     <form method="POST" action="{{ route('posts.destroy', $post) }}">
                         @csrf
                         @method('DELETE')

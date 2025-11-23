@@ -1,3 +1,9 @@
+@php
+    use Illuminate\Support\Str;
+
+    $isOwner = auth()->check() && auth()->id() === $community->owner_id;
+@endphp
+
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
@@ -32,37 +38,59 @@
                         @endif
                     </div>
 
-                    {{-- Bouton rejoindre / quitter (on code la logique dans un second temps) --}}
+                    {{-- Actions à droite --}}
                     @auth
                         @php
                             $isMember = $community->members->contains(auth()->id());
                         @endphp
 
-                        <div>
-                            @if($isMember)
-                                <form method="POST" action="{{ route('communities.leave', $community) }}">
+                        <div class="flex flex-col items-end gap-2">
+                            {{-- Si c'est le créateur : gestion communauté --}}
+                            @if ($isOwner)
+                                {{-- Créer un post dans cette communauté --}}
+                                <a href="{{ route('communities.posts.create', $community) }}"
+                                   class="px-4 py-2 text-sm rounded-full bg-emerald-500 text-white hover:bg-emerald-600">
+                                    + Nouveau post dans cette communauté
+                                </a>
+
+                                {{-- Supprimer la communauté --}}
+                                <form method="POST"
+                                      action="{{ route('communities.destroy', $community) }}"
+                                      onsubmit="return confirm('Supprimer définitivement cette communauté et tous ses posts ?');">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit"
-                                            class="px-4 py-2 text-sm rounded-md border border-red-600 text-red-600 hover:bg-red-50">
-                                        Quitter la communauté
+                                            class="px-4 py-2 text-sm rounded-full bg-red-500 text-white hover:bg-red-600">
+                                        Supprimer la communauté
                                     </button>
                                 </form>
                             @else
-                                <form method="POST" action="{{ route('communities.join', $community) }}">
-                                    @csrf
-                                    <button type="submit"
-                                            class="px-4 py-2 text-sm rounded-md bg-indigo-600 text-white hover:bg-indigo-700">
-                                        Rejoindre la communauté
-                                    </button>
-                                </form>
+                                {{-- Sinon : rejoindre / quitter --}}
+                                @if($isMember)
+                                    <form method="POST" action="{{ route('communities.leave', $community) }}">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                                class="px-4 py-2 text-sm rounded-md border border-red-600 text-red-600 hover:bg-red-50">
+                                            Quitter la communauté
+                                        </button>
+                                    </form>
+                                @else
+                                    <form method="POST" action="{{ route('communities.join', $community) }}">
+                                        @csrf
+                                        <button type="submit"
+                                                class="px-4 py-2 text-sm rounded-md bg-indigo-600 text-white hover:bg-indigo-700">
+                                            Rejoindre la communauté
+                                        </button>
+                                    </form>
+                                @endif
                             @endif
                         </div>
                     @endauth
                 </div>
             </div>
 
-            {{-- Liste des posts de la communauté (on branchera avec tes posts ensuite) --}}
+            {{-- Liste des posts de la communauté --}}
             <div class="bg-white shadow-sm sm:rounded-lg">
                 <div class="p-6">
                     <h3 class="text-lg font-semibold mb-4">Posts de la communauté</h3>
@@ -70,22 +98,35 @@
                     @if($community->posts->count())
                         <div class="space-y-4">
                             @foreach($community->posts as $post)
-                                <div class="border rounded-lg px-4 py-3">
-                                    <div class="text-sm text-gray-500 mb-1">
-                                        Posté par {{ $post->user->display_name ?? $post->user->name }}
-                                        • {{ $post->created_at->diffForHumans() }}
+                                <article
+                                    onclick="window.location='{{ route('posts.show', $post) }}'"
+                                    class="cursor-pointer border rounded-lg px-4 py-3 hover:shadow-sm hover:-translate-y-0.5 transition">
+
+                                    <div class="text-xs text-gray-500 mb-1 flex justify-between">
+                                        <span>
+                                            Posté par {{ $post->user->display_name ?? $post->user->name }}
+                                        </span>
+                                        <span>
+                                            {{ $post->created_at->diffForHumans() }}
+                                        </span>
                                     </div>
-                                    <div class="font-semibold">{{ $post->title ?? 'Post #' . $post->id }}</div>
-                                    @if($post->content ?? false)
+
+                                    <div class="font-semibold text-sm sm:text-base text-gray-900">
+                                        {{ $post->titre }}
+                                    </div>
+
+                                    @if($post->texte)
                                         <p class="mt-1 text-sm text-gray-700">
-                                            {{ Str::limit($post->content, 200) }}
+                                            {{ Str::limit($post->texte, 200) }}
                                         </p>
                                     @endif
-                                </div>
+                                </article>
                             @endforeach
                         </div>
                     @else
-                        <p class="text-gray-600">Aucun post dans cette communauté pour l’instant.</p>
+                        <p class="text-gray-600">
+                            Aucun post dans cette communauté pour l’instant.
+                        </p>
                     @endif
                 </div>
             </div>

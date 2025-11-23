@@ -87,4 +87,26 @@ class CommunityController extends Controller
 
         return back()->with('status', 'Vous avez quitté la communauté.');
     }
+    public function destroy(Community $community)
+    {
+    $user = request()->user();
+
+    // Seul le créateur peut supprimer
+    if ($community->owner_id !== $user->id) {
+        abort(403);
+    }
+
+    // Supprimer les posts de la communauté (ou les détacher si tu préfères)
+    $community->posts()->delete();
+
+    // Détacher les membres
+    $community->members()->detach();
+
+    // Supprimer la communauté
+    $community->delete();
+
+    return redirect()
+        ->route('communities.index')
+        ->with('status', 'Communauté supprimée avec succès.');
+    }
 }

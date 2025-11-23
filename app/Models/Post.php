@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use App\Models\User;
 use App\Models\Community;
+use App\Models\Comment;
+use App\Models\PostLike;
 
 class Post extends Model
 {
@@ -18,6 +20,7 @@ class Post extends Model
     // Colonnes pouvant être remplies en masse
     protected $fillable = [
         'user_id',
+        'community_id',
         'titre',
         'texte',
         'url',      // <- si ta colonne s'appelle bien `url`
@@ -31,6 +34,15 @@ class Post extends Model
     public function community()
     {
         return $this->belongsTo(Community::class);
+    }
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function likes()
+    {
+        return $this->hasMany(PostLike::class);
     }
 
 }

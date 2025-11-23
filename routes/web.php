@@ -4,7 +4,9 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\CommunityController; // 👈 AJOUT
+use App\Http\Controllers\CommunityController;
+use App\Http\Controllers\CommentController;
+use App\Http\Controllers\PostLikeController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -41,6 +43,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/communities/{community}', [CommunityController::class, 'show'])->name('communities.show');
     Route::post('/communities/{community}/join', [CommunityController::class, 'join'])->name('communities.join');
     Route::delete('/communities/{community}/leave', [CommunityController::class, 'leave'])->name('communities.leave');
+    Route::get('/communities/{community}/posts/create', [PostController::class, 'create'])->name('communities.posts.create');
+    Route::delete('/communities/{community}', [CommunityController::class, 'destroy'])->name('communities.destroy');
+  
+
+    Route::post('/posts/{post}/comments', [CommentController::class, 'store'])
+    ->name('posts.comments.store');
+    
+    Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])
+    ->name('comments.destroy');
+    
+    Route::post('/posts/{post}/like', [PostLikeController::class, 'toggle'])
+    ->name('posts.like');
 });
 
 require __DIR__.'/auth.php';

@@ -58,4 +58,13 @@ protected $fillable = ['name','username','email','password','display_name','avat
             ->withTimestamps()
             ->withPivot('role');
     }
+        public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    public function likedPosts()
+    {
+        return $this->belongsToMany(Post::class, 'post_likes')->withTimestamps();
+    }
 }

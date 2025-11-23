@@ -1,97 +1,77 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Créer un nouveau post
-            </h2>
-
-            <a href="{{ route('posts.index') }}"
-               class="inline-flex items-center rounded border px-3 py-1 bg-gray-200 text-gray-800 hover:bg-gray-300">
-                ← Retour à la liste
-            </a>
-        </div>
-    </x-slot>
+    {{-- On laisse le header vide pour ne rien rajouter dans la barre blanche --}}
+    <x-slot name="header"></x-slot>
 
     <div class="py-6">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            @if ($errors->any())
-                <div class="mb-4 rounded bg-red-100 p-3 text-red-800">
-                    <ul class="list-disc list-inside text-sm">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
+            
+            {{-- Message de statut --}}
+            @if (session('status'))
+                <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                    {{ session('status') }}
                 </div>
             @endif
 
-            <div class="bg-white shadow-sm rounded-lg p-6">
-                <form method="POST" action="{{ route('posts.store') }}" class="space-y-6">
+            {{-- Formulaire de création --}}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h2 class="text-2xl font-bold text-slate-900 mb-6">Créer un nouveau post</h2>
+
+                <form method="POST" action="{{ route('posts.store') }}">
                     @csrf
 
                     {{-- Titre --}}
-                    <div>
-                        <label for="titre" class="block text-sm font-medium text-gray-700">
-                            Titre
+                    <div class="mb-4">
+                        <label for="titre" class="block text-sm font-medium text-slate-700 mb-2">
+                            Titre <span class="text-red-500">*</span>
                         </label>
-                        <input
-                            type="text"
-                            name="titre"
-                            id="titre"
-                            value="{{ old('titre') }}"
-                            class="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500"
-                            required
-                        >
+                        <input type="text" name="titre" id="titre" required
+                               class="w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
+                               value="{{ old('titre') }}">
                         @error('titre')
-                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    {{-- Description --}}
-                    <div>
-                        <label for="texte" class="block text-sm font-medium text-gray-700">
-                            Description
+                    {{-- Texte --}}
+                    <div class="mb-4">
+                        <label for="texte" class="block text-sm font-medium text-slate-700 mb-2">
+                            Texte
                         </label>
-                        <textarea
-                            name="texte"
-                            id="texte"
-                            rows="4"
-                            class="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500"
-                        >{{ old('texte') }}</textarea>
+                        <textarea name="texte" id="texte" rows="5"
+                                  class="w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500">{{ old('texte') }}</textarea>
                         @error('texte')
-                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
                     {{-- URL --}}
-                    <div>
-                        <label for="url" class="block text-sm font-medium text-gray-700">
+                    <div class="mb-6">
+                        <label for="url" class="block text-sm font-medium text-slate-700 mb-2">
                             URL
                         </label>
-                        <input
-                            type="url"
-                            name="url"
-                            id="url"
-                            value="{{ old('url') }}"
-                            class="mt-1 block w-full rounded border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500"
-                            required
-                        >
+                        <input type="url" name="url" id="url"
+                               class="w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500"
+                               value="{{ old('url') }}">
                         @error('url')
-                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                            <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
 
-                    {{-- BOUTONS --}}
-                    <div class="flex items-center justify-end space-x-3">
+                    {{-- Boutons --}}
+                    <div class="flex items-center gap-3">
+                        <button type="submit"
+                                class="inline-flex items-center rounded-full px-6 py-2 text-sm font-medium
+                                       bg-emerald-500 text-white hover:bg-emerald-600 shadow-sm transition">
+                            Publier
+                        </button>
                         <a href="{{ route('posts.index') }}"
-                           class="text-sm text-gray-600 hover:text-gray-900">
+                           class="text-sm text-slate-600 hover:text-slate-900">
                             Annuler
                         </a>
-
-                        <button type="submit"
-                                class="inline-flex items-center px-4 py-2 bg-red-500 border border-transparent rounded-md font-semibold text-xs text-gray-900 uppercase tracking-widest hover:bg-red-600 focus:bg-red-600 active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                            Créer le post
-                        </button>
                     </div>
+                    @if (isset($community))
+                    <input type="hidden" name="community_id" value="{{ $community->id }}">
+                    @endif
                 </form>
             </div>
         </div>
