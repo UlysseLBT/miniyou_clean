@@ -57,11 +57,21 @@ class CommunityController extends Controller
      */
     public function show(Community $community)
     {
-        $community->load(['owner', 'members', 'posts.user']);
+        // On charge le owner + les membres (pour l’affichage)
+        $community->load(['owner', 'members']);
 
-        return view('communities.show', compact('community'));
+        // On récupère UNIQUEMENT les posts de cette communauté
+        $posts = $community->posts()
+            ->with('user')
+            ->withCount(['comments', 'likes'])
+            ->latest()
+            ->get();
+
+        return view('communities.show', [
+            'community' => $community,
+            'posts'     => $posts,
+        ]);
     }
-
     /**
      * Rejoindre une communauté
      */

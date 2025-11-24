@@ -1,7 +1,9 @@
 @php
     use Illuminate\Support\Str;
 
-    $isOwner = auth()->check() && auth()->id() === $community->owner_id;
+    $isOwner  = auth()->check() && auth()->id() === $community->owner_id;
+    $isMember = auth()->check() && $community->members->contains(auth()->id());
+    $canPost  = $isOwner || $isMember; // créateur OU membre
 @endphp
 
 <x-app-layout>
@@ -40,20 +42,18 @@
 
                     {{-- Actions à droite --}}
                     @auth
-                        @php
-                            $isMember = $community->members->contains(auth()->id());
-                        @endphp
-
                         <div class="flex flex-col items-end gap-2">
-                            {{-- Si c'est le créateur : gestion communauté --}}
-                            @if ($isOwner)
-                                {{-- Créer un post dans cette communauté --}}
+                            {{-- Bouton créer un post : pour le créateur ET les membres --}}
+                            @if ($canPost)
                                 <a href="{{ route('communities.posts.create', $community) }}"
                                    class="px-4 py-2 text-sm rounded-full bg-emerald-500 text-white hover:bg-emerald-600">
                                     + Nouveau post dans cette communauté
                                 </a>
+                            @endif
 
-                                {{-- Supprimer la communauté --}}
+                            {{-- Gestion créateur / membres --}}
+                            @if ($isOwner)
+                                {{-- Supprimer la communauté (seulement créateur) --}}
                                 <form method="POST"
                                       action="{{ route('communities.destroy', $community) }}"
                                       onsubmit="return confirm('Supprimer définitivement cette communauté et tous ses posts ?');">
@@ -65,8 +65,8 @@
                                     </button>
                                 </form>
                             @else
-                                {{-- Sinon : rejoindre / quitter --}}
-                                @if($isMember)
+                                {{-- Rejoindre / quitter pour les autres --}}
+                                @if ($isMember)
                                     <form method="POST" action="{{ route('communities.leave', $community) }}">
                                         @csrf
                                         @method('DELETE')
@@ -95,9 +95,9 @@
                 <div class="p-6">
                     <h3 class="text-lg font-semibold mb-4">Posts de la communauté</h3>
 
-                    @if($community->posts->count())
+                    @if($posts->count())
                         <div class="space-y-4">
-                            @foreach($community->posts as $post)
+                            @foreach($posts as $post)
                                 <article
                                     onclick="window.location='{{ route('posts.show', $post) }}'"
                                     class="cursor-pointer border rounded-lg px-4 py-3 hover:shadow-sm hover:-translate-y-0.5 transition">

@@ -14,7 +14,7 @@
                         <h3 class="text-lg font-semibold">Toutes les communautés</h3>
 
                         <a href="{{ route('communities.create') }}"
-                           class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700">
+                           class="inline-flex items-center px-4 py-2 text-emerald-600 hover:text-emerald-700 hover:underline break-all">
                             + Créer une communauté
                         </a>
                     </div>

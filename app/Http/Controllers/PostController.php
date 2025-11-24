@@ -12,6 +12,7 @@ class PostController extends Controller
 {
     $posts = Post::with('user')
         ->withCount(['comments', 'likes'])
+        ->whereNull('community_id') 
         ->latest()
         ->paginate(10);
 
