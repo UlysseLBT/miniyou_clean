@@ -67,4 +67,8 @@ protected $fillable = ['name','username','email','password','display_name','avat
     {
         return $this->belongsToMany(Post::class, 'post_likes')->withTimestamps();
     }
+    public function posts()
+    {
+    return $this->hasMany(Post::class);
+    }
 }

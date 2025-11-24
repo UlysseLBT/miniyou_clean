@@ -70,7 +70,15 @@
         {{-- Instagram --}}
         <div>
             <x-input-label for="instagram" :value="__('Instagram')" />
-            <x-text-input id="instagram" name="instagram" type="text" class="mt-1 block w-full" :value="old('instagram', $user            <x-input-error class="mt-2" :messages="$errors->get('instagram')" />
+            <x-text-input id="instagram" name="instagram" type="text" class="mt-1 block w-full" :value="old('instagram', $user->instagram)" autocomplete="instagram" />
+            <x-input-error class="mt-2" :messages="$errors->get('instagram')" />
+        </div>
+
+        {{-- Avatar --}}
+        <div>
+            <x-input-label for="avatar" :value="__('Avatar')" />
+            <input id="avatar" name="avatar" type="file" class="mt-1 block w-full" />
+            <x-input-error class="mt-2" :messages="$errors->get('avatar')" />
         </div>
         
         

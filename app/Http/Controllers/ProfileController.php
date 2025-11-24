@@ -4,15 +4,35 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use App\Models\Post;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
+       public function index(Request $request)
+    {
+    $user = $request->user();
+
+    $posts = $user->posts()
+        ->with('community')
+        ->withCount(['comments', 'likes'])
+        ->latest()
+        ->get();
+
+    return view('profile.index', [
+        'user'  => $user,
+        'posts' => $posts,
+    ]);
+    }
+
+
     public function edit(Request $request)
     {
-        return view('profile.edit', [
-            'user' => $request->user(),
-        ]);
+        $user = $request->user();
+        return view('profile.edit', compact('user'));
     }
+
+    
 
     public function update(Request $request)
     {

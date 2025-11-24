@@ -22,7 +22,7 @@
                         <x-nav-link :href="route('communities.index')" :active="request()->routeIs('communities.index')">
                             Communautés
                         </x-nav-link>
-                        <x-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
+                        <x-nav-link :href="route('profile.index')" :active="request()->routeIs('profile.index')">
                             Mon Profil
                         </x-nav-link>
                     </div>
@@ -86,7 +86,7 @@
                 <x-responsive-nav-link :href="route('communities.index')" :active="request()->routeIs('communities.index')">
                     Communautés
                 </x-responsive-nav-link>
-                <x-responsive-nav-link :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
+                <x-responsive-nav-link :href="route('profile.index')" :active="request()->routeIs('profile.index')">
                     Mon Profil
                 </x-responsive-nav-link>
             </div>
