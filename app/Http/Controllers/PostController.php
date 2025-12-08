@@ -61,11 +61,13 @@ public function destroy(Post $post)
         ->with('status', 'Post supprimé');
 }
 
-public function show(Post $post)
+public function show(Post $post, Request $request)
 {
-    $post->load(['user', 'comments.user', 'likes']);
-    $post->loadCount(['comments', 'likes']);
+    $page = $request->query('page', 1);
 
-    return view('posts.show', compact('post'));
+    return view('posts.show', [
+        'post' => $post,
+        'page' => $page,
+    ]);
 }
 }
