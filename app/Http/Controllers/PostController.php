@@ -25,28 +25,36 @@ public function create(Community $community)
         'community' => $community,
     ]);
 }
+
     
 public function store(Request $request)
 {
     $data = $request->validate([
         'titre'        => ['required', 'string', 'max:255'],
         'texte'        => ['nullable', 'string'],
-        'url'          => ['required', 'string', 'max:2048', 'url'],
-        'community_id' => ['required', 'exists:communities,id'],
+        'url'          => ['nullable', 'string', 'max:2048', 'url'], // plus "required"
+        'community_id' => ['nullable', 'exists:communities,id'],     // plus "required"
     ]);
 
     $post = Post::create([
         'user_id'      => $request->user()->id,
-        'community_id' => $data['community_id'],
-        'titre'        => $data['titre'],
-        'texte'        => $data['texte'] ?? null,
-        'url'          => $data['url'],
+        'community_id' => $data['community_id'] ?? null,
+        'titre'        => $data['titre'],          // 👈 maintenant on l’envoie bien
+        'texte'        => $data['texte'] ?? null,  // 👈 idem
+        'url'          => $data['url'] ?? null,
     ]);
 
+    if ($post->community_id) {
+        return redirect()
+            ->route('communities.show', $post->community_id)
+            ->with('status', 'Post créé dans la communauté.');
+    }
+
     return redirect()
-        ->route('communities.show', $data['community_id'])
-        ->with('status', 'Post créé dans la communauté.');
+        ->route('posts.index')
+        ->with('status', 'Post créé.');
 }
+
 
 public function destroy(Post $post)
 {
