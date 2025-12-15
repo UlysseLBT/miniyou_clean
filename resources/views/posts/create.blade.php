@@ -70,7 +70,7 @@
                         </a>
                     </div>
                     @if (isset($community))
-                    <input type="hidden" name="community_id" value="{{ $community->id }}">
+                        <input type="hidden" name="community_id" value="{{ $community->id }}">
                     @endif
                 </form>
             </div>
