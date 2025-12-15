@@ -10,25 +10,35 @@
     $userHasLiked   = auth()->check()
         ? $post->likes->contains('user_id', auth()->id())
         : false;
+
+    // page actuelle (ex: /posts/12?page=3)
+    $page = request('page', 1);
 @endphp
 
 <x-app-layout>
-    <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Détails du post
-            </h2>
-
-            <a href="{{ route('posts.index') }}"
-               class="inline-flex items-center rounded-full px-4 py-2 text-sm font-medium
-                      bg-gray-100 text-gray-700 hover:bg-gray-200">
-                ← Retour aux posts
-            </a>
-        </div>
-    </x-slot>
-
     <div class="py-8">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+
+            {{-- Titre + bouton retour --}}
+            <div class="mb-4 flex items-center justify-between">
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    Détails du post
+                </h2>
+
+                <button
+                    type="button"
+                    onclick="
+                        if (window.history.length > 1) {
+                            window.history.back();
+                        } else {
+                            window.location.href='{{ route('posts.index', ['page' => $page]) }}';
+                        }
+                    "
+                    class="inline-flex items-center rounded-full px-4 py-2 text-sm font-medium
+                            bg-gray-100 text-gray-700 hover:bg-gray-200">
+                    ← Retour aux posts
+                </button>
+            </div>
 
             {{-- Carte du post --}}
             <article class="bg-white shadow-sm rounded-xl p-6 sm:p-7 border border-slate-100">
@@ -73,7 +83,7 @@
 
                                 @if($host)
                                     <span class="inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5
-                                                 text-[11px] font-medium text-slate-600">
+                                                text-[11px] font-medium text-slate-600">
                                         {{ $host }}
                                     </span>
                                 @endif
@@ -91,8 +101,8 @@
                             @csrf
                             <button type="submit"
                                     class="inline-flex items-center rounded-full px-4 py-2 text-sm font-medium
-                                           {{ $userHasLiked ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700' }}
-                                           hover:bg-emerald-600 hover:text-white transition">
+                                        {{ $userHasLiked ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700' }}
+                                        hover:bg-emerald-600 hover:text-white transition">
                                 @if ($userHasLiked)
                                     ❤️
                                     <span class="ml-2">Je n'aime plus</span>
@@ -142,7 +152,7 @@
                         <div class="mt-3 flex justify-end">
                             <button type="submit"
                                     class="inline-flex items-center rounded-full px-4 py-2 text-sm font-medium
-                                           bg-emerald-500 text-white hover:bg-emerald-600">
+                                        bg-emerald-500 text-white hover:bg-emerald-600">
                                 Publier
                             </button>
                         </div>
@@ -196,9 +206,9 @@
                         @method('DELETE')
                         <button type="submit"
                                 class="inline-flex items-center px-4 py-2 bg-red-500 border border-transparent rounded-full
-                                       font-semibold text-xs text-white uppercase tracking-widest
-                                       hover:bg-red-600 active:bg-red-700 focus:outline-none focus:ring-2
-                                       focus:ring-red-500 focus:ring-offset-2">
+                                    font-semibold text-xs text-white uppercase tracking-widest
+                                    hover:bg-red-600 active:bg-red-700 focus:outline-none focus:ring-2
+                                    focus:ring-red-500 focus:ring-offset-2">
                             Supprimer ce post
                         </button>
                     </form>

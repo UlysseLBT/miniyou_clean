@@ -41,10 +41,13 @@
                     @endphp
 
                     {{-- Toute la carte est cliquable = détails du post --}}
-                    <article
-                        onclick="window.location='{{ route('posts.show', $post) }}'"
-                        class="cursor-pointer bg-white border border-slate-100 rounded-xl shadow-sm p-4 sm:p-5
-                               hover:shadow-md hover:-translate-y-0.5 transition">
+                <article
+                    onclick="window.location='{{ route('posts.show', [
+                        'post' => $post->id,
+                        'page' => $posts->currentPage(),
+                    ]) }}'"
+                    class="cursor-pointer bg-white border border-slate-100 rounded-xl shadow-sm p-4 sm:p-5
+                        hover:shadow-md hover:-translate-y-0.5 transition">
 
                         <div class="flex items-start gap-4">
 
