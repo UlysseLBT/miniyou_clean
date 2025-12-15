@@ -35,8 +35,8 @@
                         }
                     "
                     class="inline-flex items-center rounded-full px-4 py-2 text-sm font-medium
-                            bg-gray-100 text-gray-700 hover:bg-gray-200">
-                    ← Retour aux posts
+                            bg-red-200 text-gray-700 hover:bg-red-300">
+                     Retour aux posts
                 </button>
             </div>
 
