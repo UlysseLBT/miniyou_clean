@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->text('texte')->nullable();
 
             // lien externe (YouTube, article, etc.)
-            $table->string('url', 2048);
+            $table->string('url', 2048)->nullable();
 
             // timestamps Laravel classiques
             $table->timestamps();
