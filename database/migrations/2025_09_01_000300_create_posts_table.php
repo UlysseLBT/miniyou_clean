@@ -25,6 +25,7 @@ return new class extends Migration {
             $table->timestamps();
             // optionnel : si tu veux une corbeille
             // $table->softDeletes();
+            
         });
     }
 

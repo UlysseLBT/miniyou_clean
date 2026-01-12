@@ -8,6 +8,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         \App\Models\Media::class => \App\Policies\MediaPolicy::class,
         \App\Models\Post::class  => \App\Policies\PostPolicy::class,
+        \App\Models\Community::class => \App\Policies\CommunityPolicy::class
     ];
 
     public function boot(): void

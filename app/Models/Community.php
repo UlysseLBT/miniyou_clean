@@ -15,6 +15,7 @@ class Community extends Model
         'slug',
         'description',
         'visibility',
+        'is_private',
     ];
     public function owner()
     {

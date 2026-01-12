@@ -1,5 +1,6 @@
 @php
     use Illuminate\Support\Str;
+    use Illuminate\Support\Facades\Storage;
 @endphp
 
 <x-app-layout>
@@ -33,28 +34,53 @@
             <div class="space-y-4">
                 @forelse ($posts as $post)
                     @php
-                        $user          = $post->user;
-                        $initial       = $user ? Str::upper(Str::substr($user->name, 0, 1)) : 'U';
+                        $user = $post->user;
+
+                        $displayName = $user?->name ?? $user?->username ?? 'Utilisateur';
+                        $initial     = $user
+                            ? Str::upper(Str::substr($displayName, 0, 1))
+                            : 'U';
+
+                        // Avatar (supporte URL complète ou fichier stocké dans storage/app/public)
+                        $avatarPath = $user?->avatar_path; // ex: "avatars/123.jpg" ou "https://..."
+                        $avatarUrl  = null;
+
+                        if ($avatarPath) {
+                            $avatarUrl = Str::startsWith($avatarPath, ['http://', 'https://'])
+                                ? $avatarPath
+                                : Storage::disk('public')->url($avatarPath);
+                        }
+
                         $host          = $post->url ? parse_url($post->url, PHP_URL_HOST) : null;
                         $likesCount    = $post->likes_count ?? 0;
                         $commentsCount = $post->comments_count ?? 0;
                     @endphp
 
                     {{-- Toute la carte est cliquable = détails du post --}}
-                <article
-                    onclick="window.location='{{ route('posts.show', [
-                        'post' => $post->id,
-                        'page' => $posts->currentPage(),
-                    ]) }}'"
-                    class="cursor-pointer bg-white border border-slate-100 rounded-xl shadow-sm p-4 sm:p-5
-                        hover:shadow-md hover:-translate-y-0.5 transition">
+                    <article
+                        role="link"
+                        tabindex="0"
+                        onclick="window.location='{{ route('posts.show', ['post' => $post->id, 'page' => $posts->currentPage()]) }}'"
+                        onkeydown="if(event.key==='Enter' || event.key===' '){ window.location='{{ route('posts.show', ['post' => $post->id, 'page' => $posts->currentPage()]) }}' }"
+                        class="cursor-pointer bg-white border border-slate-100 rounded-xl shadow-sm p-4 sm:p-5
+                               hover:shadow-md hover:-translate-y-0.5 transition focus:outline-none focus:ring-2 focus:ring-emerald-300">
 
                         <div class="flex items-start gap-4">
 
-                            {{-- Avatar initiale --}}
-                            <div class="hidden sm:flex h-10 w-10 flex-none items-center justify-center
-                                        rounded-full bg-emerald-100 text-emerald-700 font-semibold">
-                                {{ $initial }}
+                            {{-- Avatar (image si dispo, sinon initiale) --}}
+                            <div class="flex h-10 w-10 flex-none items-center justify-center rounded-full overflow-hidden">
+                                @if($avatarUrl)
+                                    <img
+                                        src="{{ $avatarUrl }}"
+                                        alt="Avatar de {{ $displayName }}"
+                                        class="h-10 w-10 object-cover"
+                                        loading="lazy"
+                                    >
+                                @else
+                                    <div class="h-10 w-10 flex items-center justify-center rounded-full bg-emerald-100 text-emerald-700 font-semibold">
+                                        {{ $initial }}
+                                    </div>
+                                @endif
                             </div>
 
                             <div class="flex-1 min-w-0">
@@ -66,7 +92,7 @@
 
                                     <div class="text-xs text-slate-400 text-right">
                                         @if ($user)
-                                            <span class="font-medium text-slate-500">{{ $user->name }}</span>
+                                            <span class="font-medium text-slate-500">{{ $displayName }}</span>
                                             <span class="mx-1">·</span>
                                         @endif
                                         {{ $post->created_at->diffForHumans() }}
@@ -86,6 +112,7 @@
                                         {{-- Lien externe : on empêche l’ouverture de la page du post --}}
                                         <a href="{{ $post->url }}"
                                            target="_blank"
+                                           rel="noopener noreferrer"
                                            onclick="event.stopPropagation();"
                                            class="text-sm text-emerald-600 hover:text-emerald-700 hover:underline break-all">
                                             {{ $post->url }}
@@ -104,13 +131,11 @@
                                 {{-- Ligne likes + commentaires --}}
                                 <div class="mt-3 flex items-center gap-4 text-xs text-slate-500">
                                     <span class="inline-flex items-center gap-1">
-                                        ❤️
-                                        <span>{{ $likesCount }}</span>
+                                        ❤️ <span>{{ $likesCount }}</span>
                                     </span>
 
                                     <span class="inline-flex items-center gap-1">
-                                        💬
-                                        <span>{{ $commentsCount }}</span>
+                                        💬 <span>{{ $commentsCount }}</span>
                                     </span>
                                 </div>
                             </div>
