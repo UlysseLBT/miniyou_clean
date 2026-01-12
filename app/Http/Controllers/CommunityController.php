@@ -5,30 +5,41 @@ namespace App\Http\Controllers;
 use App\Models\Community;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 
-class CommunityController extends Controller
+class CommunityController extends Controller implements HasMiddleware
 {
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('auth', only: ['create', 'store', 'join', 'leave', 'destroy']),
+        ];
+    }
+
     /**
      * Liste des communautés
+     * - Visiteur : seulement public
+     * - Connecté : toutes (public + private) => la page show gère la “porte” (demande)
      */
     public function index()
     {
-        $communities = Community::with('owner')->latest()->paginate(12);
+        $userId = auth()->id();
+
+        $communities = Community::query()
+            ->when(!$userId, fn ($q) => $q->where('visibility', 'public'))
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
         return view('communities.index', compact('communities'));
     }
 
-    /**
-     * Formulaire de création
-     */
     public function create()
     {
         return view('communities.create');
     }
 
-    /**
-     * Enregistrer une nouvelle communauté
-     */
     public function store(Request $request)
     {
         $data = $request->validate([
@@ -45,78 +56,119 @@ class CommunityController extends Controller
             'visibility'  => $data['visibility'],
         ]);
 
-        // le créateur devient membre "owner"
-        $community->members()->attach($request->user()->id, ['role' => 'owner']);
+        // Le créateur devient membre owner
+        $community->members()->syncWithoutDetaching([
+            $request->user()->id => ['role' => 'owner'],
+        ]);
 
-        return redirect()->route('communities.show', $community)
+        return redirect()
+            ->route('communities.show', $community)
             ->with('status', 'Communauté créée avec succès.');
     }
 
     /**
      * Afficher une communauté
+     * - Private + non membre => page communities.private (demande d’accès)
+     * - Owner => voit aussi la liste des demandes pending
      */
     public function show(Community $community)
     {
-        // On charge le owner + les membres (pour l’affichage)
-        $community->load(['owner', 'members']);
+        $community->load(['owner']);
 
-        // On récupère UNIQUEMENT les posts de cette communauté
+        // Communauté privée => si pas membre => page "demande d'accès"
+        if ($community->visibility === 'private') {
+            $user = auth()->user();
+
+            if (!$user) {
+                return redirect()->guest(route('login'));
+            }
+
+            $isMember = $community->owner_id === $user->id
+                || $community->members()->where('users.id', $user->id)->exists();
+
+            if (!$isMember) {
+                $pending = $community->joinRequests()
+                    ->where('user_id', $user->id)
+                    ->where('status', 'pending')
+                    ->first();
+
+                return view('communities.private', [
+                    'community' => $community,
+                    'pending'   => $pending,
+                ]);
+            }
+        }
+
+        // Ici : soit public, soit membre/owner
+        $community->load(['members']);
+
+        // ✅ Liste des demandes en attente (uniquement propriétaire)
+        $pendingRequests = collect();
+        if (auth()->check() && auth()->id() === $community->owner_id) {
+            $pendingRequests = $community->joinRequests()
+                ->with('user')
+                ->where('status', 'pending')
+                ->latest()
+                ->get();
+        }
+
         $posts = $community->posts()
             ->with('user')
             ->withCount(['comments', 'likes'])
             ->latest()
-            ->get();
+            ->paginate(10)
+            ->withQueryString();
 
         return view('communities.show', [
-            'community' => $community,
-            'posts'     => $posts,
+            'community'       => $community,
+            'posts'           => $posts,
+            'pendingRequests' => $pendingRequests,
         ]);
     }
+
     /**
-     * Rejoindre une communauté
+     * Rejoindre une communauté publique
      */
     public function join(Community $community)
     {
+        if ($community->visibility === 'private') {
+            abort(403, "Cette communauté est privée (demande/invitation requise).");
+        }
+
         $user = request()->user();
 
-        if (! $community->members->contains($user->id)) {
-            $community->members()->attach($user->id, ['role' => 'member']);
-        }
+        $community->members()->syncWithoutDetaching([
+            $user->id => ['role' => 'member'],
+        ]);
 
         return back()->with('status', 'Vous avez rejoint la communauté.');
     }
 
-    /**
-     * Quitter une communauté
-     */
     public function leave(Community $community)
     {
         $user = request()->user();
+
+        if ($community->owner_id === $user->id) {
+            return back()->with('status', "Le propriétaire ne peut pas quitter sa communauté.");
+        }
 
         $community->members()->detach($user->id);
 
         return back()->with('status', 'Vous avez quitté la communauté.');
     }
+
     public function destroy(Community $community)
     {
-    $user = request()->user();
+        $user = request()->user();
 
-    // Seul le créateur peut supprimer
-    if ($community->owner_id !== $user->id) {
-        abort(403);
-    }
+        abort_unless($community->owner_id === $user->id, 403);
 
-    // Supprimer les posts de la communauté (ou les détacher si tu préfères)
-    $community->posts()->delete();
+        $community->posts()->delete();
+        $community->members()->detach();
+        $community->delete();
 
-    // Détacher les membres
-    $community->members()->detach();
-
-    // Supprimer la communauté
-    $community->delete();
-
-    return redirect()
-        ->route('communities.index')
-        ->with('status', 'Communauté supprimée avec succès.');
+        return redirect()
+            ->route('communities.index')
+            ->with('status', 'Communauté supprimée avec succès.');
     }
 }

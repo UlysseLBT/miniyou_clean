@@ -33,4 +33,13 @@ class Community extends Model
     {
         return $this->hasMany(Post::class);
     }
+    public function joinRequests()
+    {
+    return $this->hasMany(\App\Models\CommunityJoinRequest::class);
+    }
+
+    public function invitations()
+    {
+    return $this->hasMany(\App\Models\CommunityInvitation::class);
+    }
 }
