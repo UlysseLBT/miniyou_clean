@@ -22,7 +22,7 @@ Route::get('/contact', [ContactController::class, 'show'])->name('contact.show')
 Route::post('/contact', [ContactController::class, 'send'])->name('contact.send');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', fn () => view('dashboard'))->name('dashboard');
+    Route::get('/dashboard', fn () => redirect()->route('posts.index'))->middleware(['auth'])->name('dashboard');
 
     // Posts
     Route::get('/posts', [PostController::class,'index'])->name('posts.index');
@@ -32,10 +32,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show');
 
     // Profil
+    // Profil (Breeze)
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile.index');
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile/edit', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile/edit', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+ 
+
+
 
     // 👇 TOUTES les routes communautés
     Route::get('/communities', [CommunityController::class, 'index'])->name('communities.index');

@@ -4,9 +4,8 @@
 @endphp
 
 <x-app-layout>
-    {{-- Header avec titre --}}
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-white leading-tight">
             {{ __('Posts') }}
         </h2>
     </x-slot>
@@ -14,35 +13,31 @@
     <div class="py-6">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
 
-            {{-- Bouton + Nouveau post en haut à gauche --}}
-            <div class="mb-4">
+            <div class="mb-5">
                 <a href="{{ route('posts.create') }}"
                    class="inline-flex items-center rounded-full px-4 py-2 text-sm font-medium
-                          bg-emerald-500 text-white hover:bg-emerald-600 shadow-sm transition">
+                          bg-white/5 border border-red-500/40 text-white
+                          hover:bg-white/10 transition
+                          shadow-[0_0_0_1px_rgba(239,68,68,.20)]">
                     + Nouveau post
                 </a>
             </div>
 
-            {{-- Message de statut --}}
             @if (session('status'))
-                <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+                <div class="mb-4 rounded-2xl border border-white/10 bg-neutral-950/35 backdrop-blur px-4 py-3 text-sm text-neutral-200">
                     {{ session('status') }}
                 </div>
             @endif
 
-            {{-- Liste des posts --}}
             <div class="space-y-4">
                 @forelse ($posts as $post)
                     @php
                         $user = $post->user;
 
                         $displayName = $user?->name ?? $user?->username ?? 'Utilisateur';
-                        $initial     = $user
-                            ? Str::upper(Str::substr($displayName, 0, 1))
-                            : 'U';
+                        $initial     = $user ? Str::upper(Str::substr($displayName, 0, 1)) : 'U';
 
-                        // Avatar (supporte URL complète ou fichier stocké dans storage/app/public)
-                        $avatarPath = $user?->avatar_path; // ex: "avatars/123.jpg" ou "https://..."
+                        $avatarPath = $user?->avatar_path;
                         $avatarUrl  = null;
 
                         if ($avatarPath) {
@@ -54,73 +49,66 @@
                         $host          = $post->url ? parse_url($post->url, PHP_URL_HOST) : null;
                         $likesCount    = $post->likes_count ?? 0;
                         $commentsCount = $post->comments_count ?? 0;
+
+                        $goTo = route('posts.show', ['post' => $post->id, 'page' => $posts->currentPage()]);
                     @endphp
 
-                    {{-- Toute la carte est cliquable = détails du post --}}
                     <article
                         role="link"
                         tabindex="0"
-                        onclick="window.location='{{ route('posts.show', ['post' => $post->id, 'page' => $posts->currentPage()]) }}'"
-                        onkeydown="if(event.key==='Enter' || event.key===' '){ window.location='{{ route('posts.show', ['post' => $post->id, 'page' => $posts->currentPage()]) }}' }"
-                        class="cursor-pointer bg-white border border-slate-100 rounded-xl shadow-sm p-4 sm:p-5
-                               hover:shadow-md hover:-translate-y-0.5 transition focus:outline-none focus:ring-2 focus:ring-emerald-300">
+                        onclick="window.location='{{ $goTo }}'"
+                        onkeydown="if(event.key==='Enter' || event.key===' '){ window.location='{{ $goTo }}' }"
+                        class="cursor-pointer bg-neutral-950/35 border border-white/10 backdrop-blur rounded-2xl
+                               shadow-[0_10px_35px_rgba(0,0,0,.35)] p-4 sm:p-5
+                               hover:bg-neutral-950/45 hover:border-white/20 hover:-translate-y-0.5 transition
+                               focus:outline-none focus:ring-2 focus:ring-red-500/30">
 
                         <div class="flex items-start gap-4">
-
-                            {{-- Avatar (image si dispo, sinon initiale) --}}
-                            <div class="flex h-10 w-10 flex-none items-center justify-center rounded-full overflow-hidden">
+                            <div class="flex h-10 w-10 flex-none items-center justify-center rounded-full overflow-hidden border border-white/10 bg-white/5">
                                 @if($avatarUrl)
-                                    <img
-                                        src="{{ $avatarUrl }}"
-                                        alt="Avatar de {{ $displayName }}"
-                                        class="h-10 w-10 object-cover"
-                                        loading="lazy"
-                                    >
+                                    <img src="{{ $avatarUrl }}" alt="Avatar de {{ $displayName }}"
+                                         class="h-10 w-10 object-cover" loading="lazy">
                                 @else
-                                    <div class="h-10 w-10 flex items-center justify-center rounded-full bg-emerald-100 text-emerald-700 font-semibold">
+                                    <div class="h-10 w-10 flex items-center justify-center rounded-full text-neutral-200 font-semibold">
                                         {{ $initial }}
                                     </div>
                                 @endif
                             </div>
 
                             <div class="flex-1 min-w-0">
-                                {{-- Titre + auteur + date --}}
                                 <div class="flex flex-wrap items-baseline justify-between gap-2">
-                                    <h3 class="text-base sm:text-lg font-semibold text-slate-900">
+                                    <h3 class="text-base sm:text-lg font-semibold text-white">
                                         {{ $post->titre }}
                                     </h3>
 
-                                    <div class="text-xs text-slate-400 text-right">
+                                    <div class="text-xs text-neutral-400 text-right">
                                         @if ($user)
-                                            <span class="font-medium text-slate-500">{{ $displayName }}</span>
+                                            <span class="font-medium text-neutral-300">{{ $displayName }}</span>
                                             <span class="mx-1">·</span>
                                         @endif
                                         {{ $post->created_at->diffForHumans() }}
                                     </div>
                                 </div>
 
-                                {{-- Texte --}}
                                 @if ($post->texte)
-                                    <p class="mt-1 text-sm text-slate-600">
+                                    <p class="mt-1 text-sm text-neutral-300">
                                         {{ Str::limit($post->texte, 180) }}
                                     </p>
                                 @endif
 
-                                {{-- Lien + domaine --}}
                                 @if ($post->url)
                                     <div class="mt-2 flex flex-wrap items-center gap-2">
-                                        {{-- Lien externe : on empêche l’ouverture de la page du post --}}
                                         <a href="{{ $post->url }}"
                                            target="_blank"
                                            rel="noopener noreferrer"
                                            onclick="event.stopPropagation();"
-                                           class="text-sm text-emerald-600 hover:text-emerald-700 hover:underline break-all">
+                                           class="text-sm text-red-300 hover:text-red-200 hover:underline break-all">
                                             {{ $post->url }}
                                         </a>
 
                                         @if ($host)
-                                            <span class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5
-                                                         text-[11px] font-medium text-slate-600"
+                                            <span class="inline-flex items-center rounded-full bg-white/5 border border-white/10 px-2 py-0.5
+                                                         text-[11px] font-medium text-neutral-300"
                                                   onclick="event.stopPropagation();">
                                                 {{ $host }}
                                             </span>
@@ -128,8 +116,7 @@
                                     </div>
                                 @endif
 
-                                {{-- Ligne likes + commentaires --}}
-                                <div class="mt-3 flex items-center gap-4 text-xs text-slate-500">
+                                <div class="mt-3 flex items-center gap-4 text-xs text-neutral-400">
                                     <span class="inline-flex items-center gap-1">
                                         ❤️ <span>{{ $likesCount }}</span>
                                     </span>
@@ -142,16 +129,15 @@
                         </div>
                     </article>
                 @empty
-                    <div class="bg-white rounded-xl shadow-sm p-6 text-center text-slate-500">
+                    <div class="bg-neutral-950/35 border border-white/10 backdrop-blur rounded-2xl shadow-lg p-6 text-center text-neutral-300">
                         Aucun post pour le moment.<br>
-                        <a href="{{ route('posts.create') }}" class="text-emerald-600 hover:underline">
+                        <a href="{{ route('posts.create') }}" class="text-red-300 hover:text-red-200 hover:underline">
                             Crée ton premier post
                         </a>
                     </div>
                 @endforelse
             </div>
 
-            {{-- Pagination --}}
             <div class="mt-6">
                 {{ $posts->links() }}
             </div>

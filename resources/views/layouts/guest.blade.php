@@ -7,22 +7,21 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-
-        <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
+
+    <body class="font-sans antialiased text-neutral-100">
+        <div class="min-h-screen relative overflow-hidden bg-[#050506]">
+
+            {{-- Glows --}}
+            <div aria-hidden="true" class="pointer-events-none absolute inset-0">
+                <div class="absolute -top-44 -left-44 h-[520px] w-[520px] rounded-full bg-red-900/35 blur-[130px]"></div>
+                <div class="absolute -top-44 -right-44 h-[520px] w-[520px] rounded-full bg-amber-900/18 blur-[130px]"></div>
+                <div class="absolute -bottom-64 left-1/3 h-[640px] w-[640px] rounded-full bg-indigo-900/22 blur-[150px]"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(255,255,255,0.08),transparent_55%)]"></div>
             </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+            <div class="relative min-h-screen flex items-center justify-center px-4 py-10">
                 {{ $slot }}
             </div>
         </div>
