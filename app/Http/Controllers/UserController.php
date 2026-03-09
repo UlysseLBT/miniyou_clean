@@ -57,8 +57,16 @@ class UserController extends Controller
      */
     public function show(string $id)
     {
-        $user = User::findOrFail($id);
-        return view('users.show', compact('user'));
+        $user = User::withCount(['followers', 'following', 'posts'])->findOrFail($id);
+
+        $posts = $user->posts()
+            ->withCount(['comments', 'likes as likes_count'])
+            ->latest()
+            ->get();
+
+        $isFollowing = auth()->check() && auth()->user()->isFollowing($user);
+
+        return view('users.show', compact('user', 'posts', 'isFollowing'));
     }
 
     /**
