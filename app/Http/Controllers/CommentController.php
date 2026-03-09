@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Comment;
+use App\Models\Notification;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
@@ -19,18 +20,30 @@ class CommentController extends Controller
             'body'    => $data['body'],
         ]);
 
+        // Notif seulement si ce n'est pas son propre post
+        if ($post->user_id !== $request->user()->id) {
+            Notification::create([
+                'user_id' => $post->user_id,
+                'type'    => 'post_commented',
+                'data'    => [
+                    'commenter_name' => $request->user()->name,
+                    'post_titre'     => $post->titre,
+                    'url'            => route('posts.show', $post->id),
+                ],
+            ]);
+        }
+
         return back()->with('status', 'Commentaire ajouté.');
     }
 
-public function destroy(Comment $comment)
+    public function destroy(Comment $comment)
     {
-    // On vérifie simplement que l'utilisateur est bien l'auteur du commentaire
-    if (auth()->id() !== $comment->user_id) {
-        abort(403);
-    }
+        if (auth()->id() !== $comment->user_id) {
+            abort(403);
+        }
 
-    $comment->delete();
+        $comment->delete();
 
-    return back()->with('status', 'Commentaire supprimé.');
+        return back()->with('status', 'Commentaire supprimé.');
     }
 }

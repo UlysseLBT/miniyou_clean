@@ -87,4 +87,12 @@ class User extends Authenticatable
     {
         return $this->following()->where('following_id', $user->id)->exists();
     }
-}
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class)->latest();
+    }
+    public function unreadNotificationsCount(): int
+    {
+        return $this->notifications()->whereNull('read_at')->count();
+    }
+};

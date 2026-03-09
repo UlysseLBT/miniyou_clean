@@ -10,6 +10,7 @@ use App\Http\Controllers\PostLikeController;
 use App\Http\Controllers\CommunityJoinRequestController;
 use App\Http\Controllers\CommunityInvitationController;
 use App\Http\Controllers\FollowController;
+use App\Http\Controllers\NotificationController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -81,6 +82,8 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/users/{user}/follow', [FollowController::class, 'toggle'])
         ->name('users.follow');
+
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
 });
 
 require __DIR__.'/auth.php';

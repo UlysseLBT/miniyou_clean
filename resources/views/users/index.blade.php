@@ -58,6 +58,66 @@
                             @endif
                         </div>
                     </form>
+
+                    {{-- Suggestions (visibles uniquement si pas de recherche en cours) --}}
+                    @if(!$query && $suggestions->isNotEmpty())
+                        <div class="mt-6">
+                            <h2 class="text-xs font-semibold text-neutral-500 uppercase tracking-widest mb-3">
+                                ✨ Suggestions pour vous
+                            </h2>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                                @foreach($suggestions as $suggested)
+                                    @php
+                                        $sName    = $suggested->display_name ?? $suggested->name;
+                                        $sInitial = Str::upper(Str::substr($sName, 0, 1));
+                                        $sAvatar  = !empty($suggested->avatar_path)
+                                            ? asset('storage/' . $suggested->avatar_path)
+                                            : null;
+                                    @endphp
+
+                                    <div class="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.03]
+                                                backdrop-blur p-3 hover:bg-white/5 hover:border-white/20 transition
+                                                shadow-[0_4px_20px_rgba(0,0,0,.2)]">
+
+                                        {{-- Avatar + Infos cliquables --}}
+                                        <a href="{{ route('users.show', $suggested->id) }}"
+                                           class="flex items-center gap-3 flex-1 min-w-0">
+                                            @if($sAvatar)
+                                                <img src="{{ $sAvatar }}"
+                                                     alt="{{ $sName }}"
+                                                     class="h-10 w-10 rounded-full object-cover border border-white/15 shrink-0">
+                                            @else
+                                                <div class="h-10 w-10 rounded-full bg-white/5 border border-white/10
+                                                            flex items-center justify-center font-semibold
+                                                            text-neutral-200 text-sm shrink-0">
+                                                    {{ $sInitial }}
+                                                </div>
+                                            @endif
+                                            <div class="min-w-0">
+                                                <p class="text-sm font-semibold text-white truncate">{{ $sName }}</p>
+                                                <p class="text-xs text-neutral-500">
+                                                    {{ $suggested->followers_count }}
+                                                    follower{{ $suggested->followers_count > 1 ? 's' : '' }}
+                                                </p>
+                                            </div>
+                                        </a>
+
+                                        {{-- Bouton Suivre --}}
+                                        <form action="{{ route('users.follow', $suggested->id) }}" method="POST">
+                                            @csrf
+                                            <button type="submit"
+                                                    class="shrink-0 text-xs px-3 py-1.5 rounded-full
+                                                           border border-red-500/40 text-red-300
+                                                           hover:bg-red-500/10 hover:border-red-400/60
+                                                           transition font-medium">
+                                                + Suivre
+                                            </button>
+                                        </form>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- Résultats --}}

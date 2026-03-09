@@ -13,21 +13,32 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request) : View
+    public function index(Request $request): View
     {
         $query = trim($request->get('q', ''));
 
         $users = User::query()
-            ->when($query, function ($q) use ($query) {
-                $q->where('name', 'like', "%{$query}%")
-                  ->orWhere('username', 'like', "%{$query}%")
-                  ->orWhere('display_name', 'like', "%{$query}%");
-            })
+            ->when($query, fn($q) => $q
+                ->where('name', 'like', "%{$query}%")
+                ->orWhere('username', 'like', "%{$query}%")
+                ->orWhere('display_name', 'like', "%{$query}%")
+            )
             ->orderBy('name')
             ->paginate(20)
             ->withQueryString();
 
-        return view('users.index', compact('users', 'query'));
+        // Suggestions : users non suivis, triés par nb de followers
+        $suggestions = collect();
+        if (!$query && auth()->check()) {
+            $followingIds = auth()->user()->following()->pluck('users.id')->push(auth()->id());
+            $suggestions = User::withCount('followers')
+                ->whereNotIn('id', $followingIds)
+                ->orderByDesc('followers_count')
+                ->limit(6)
+                ->get();
+        }
+
+        return view('users.index', compact('users', 'query', 'suggestions'));
     }
 
     /**
