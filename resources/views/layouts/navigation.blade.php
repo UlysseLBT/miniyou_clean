@@ -18,6 +18,10 @@
                         Communautés
                     </x-nav-link>
 
+                    <x-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
+                        Membres
+                    </x-nav-link>
+
                     <x-nav-link :href="route('profile.index')" :active="request()->routeIs('profile.*')">
                         Mon Profil
                     </x-nav-link>
@@ -73,6 +77,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('communities.index')" :active="request()->routeIs('communities.*')">
                 Communautés
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('users.index')" :active="request()->routeIs('users.*')">
+                Membres
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('profile.index')" :active="request()->routeIs('profile.*')">
                 Mon Profil
