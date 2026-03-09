@@ -9,6 +9,7 @@ use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PostLikeController;
 use App\Http\Controllers\CommunityJoinRequestController;
 use App\Http\Controllers\CommunityInvitationController;
+use App\Http\Controllers\FollowController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -77,6 +78,9 @@ Route::middleware('auth')->group(function () {
     
     Route::post('/posts/{post}/like', [PostLikeController::class, 'toggle'])
     ->name('posts.like');
+
+    Route::post('/users/{user}/follow', [FollowController::class, 'toggle'])
+        ->name('users.follow');
 });
 
 require __DIR__.'/auth.php';
