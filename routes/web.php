@@ -11,6 +11,9 @@ use App\Http\Controllers\CommunityJoinRequestController;
 use App\Http\Controllers\CommunityInvitationController;
 use App\Http\Controllers\FollowController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\HashtagController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\Admin\ReportController as AdminReportController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -39,7 +42,18 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
- 
+
+    Route::get('/hashtag/{name}', [HashtagController::class, 'show'])
+    ->name('hashtag.show');
+    Route::post('/posts/{post}/report', [ReportController::class, 'store'])
+    ->name('posts.report')
+    ->middleware('auth');
+
+// Admin
+    Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(function () {
+    Route::get('/reports', [AdminReportController::class, 'index'])->name('reports.index');
+    Route::patch('/reports/{report}', [AdminReportController::class, 'update'])->name('reports.update');
+    });
 
 
 

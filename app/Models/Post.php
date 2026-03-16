@@ -44,5 +44,13 @@ class Post extends Model
     {
         return $this->hasMany(PostLike::class);
     }
+    public function hashtags()
+    {
+    return $this->belongsToMany(Hashtag::class);
+    }
+    public function reports()
+{
+    return $this->hasMany(Report::class);
+}
 
 }

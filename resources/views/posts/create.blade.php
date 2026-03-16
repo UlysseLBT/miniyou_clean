@@ -31,14 +31,12 @@
     <div class="py-10">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 
-            {{-- Message de statut --}}
             @if (session('status'))
                 <div class="mb-4 rounded-2xl border border-white/10 bg-neutral-950/35 backdrop-blur px-4 py-3 text-sm text-neutral-200">
                     {{ session('status') }}
                 </div>
             @endif
 
-            {{-- Formulaire --}}
             <div class="bg-neutral-950/35 border border-white/10 backdrop-blur rounded-2xl
                         shadow-[0_10px_35px_rgba(0,0,0,.35)] p-6 sm:p-7">
 
@@ -94,6 +92,28 @@
                                       focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500/30">
 
                         @error('url')
+                            <p class="mt-2 text-sm text-red-300">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- 👇 Hashtags --}}
+                    <div>
+                        <label for="tags" class="block text-sm font-medium text-neutral-200 mb-2">
+                            Hashtags
+                        </label>
+
+                        <input type="text" name="tags" id="tags"
+                               value="{{ old('tags') }}"
+                               placeholder="laravel, php, bts..."
+                               class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-neutral-100
+                                      placeholder:text-neutral-500
+                                      focus:outline-none focus:ring-2 focus:ring-red-500/30 focus:border-red-500/30">
+
+                        <p class="mt-1.5 text-xs text-neutral-500">
+                            Séparés par des virgules. Les #tags écrits dans le texte sont aussi détectés automatiquement.
+                        </p>
+
+                        @error('tags')
                             <p class="mt-2 text-sm text-red-300">{{ $message }}</p>
                         @enderror
                     </div>
