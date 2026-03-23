@@ -50,11 +50,7 @@
                                     </span>
                                 </div>
 
-                                {{-- Post signalé --}}
-                                <p class="text-sm font-medium text-white truncate">
-                                    Post : "{{ $report->post?->titre ?? 'Post supprimé' }}"
-                                </p>
-
+                                {{-- Auteur du signalement --}}
                                 <p class="text-xs text-neutral-400 mt-0.5">
                                     Signalé par <span class="text-neutral-300">{{ $report->user?->name ?? 'Utilisateur supprimé' }}</span>
                                     · {{ $report->created_at->diffForHumans() }}
@@ -63,7 +59,7 @@
 
                             {{-- Actions --}}
                             @if($report->status === 'pending')
-                                <div class="flex gap-2 shrink-0">
+                                <div class="flex flex-wrap gap-2 shrink-0">
                                     <form method="POST" action="{{ route('admin.reports.update', $report) }}">
                                         @csrf @method('PATCH')
                                         <input type="hidden" name="status" value="reviewed">
@@ -85,9 +81,49 @@
                                             ✕ Ignorer
                                         </button>
                                     </form>
+
+                                    {{-- Supprimer le post --}}
+                                    @if($report->post)
+                                        <form method="POST" action="{{ route('admin.reports.delete-post', $report) }}"
+                                              onsubmit="return confirm('Supprimer ce post définitivement ?')">
+                                            @csrf @method('DELETE')
+                                            <button type="submit"
+                                                    class="rounded-full px-3 py-1.5 text-xs font-medium
+                                                           bg-red-500/10 border border-red-500/30 text-red-300
+                                                           hover:bg-red-500/20 transition">
+                                                🗑 Supprimer le post
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             @endif
                         </div>
+
+                        {{-- Contenu du post signalé --}}
+                        @if($report->post)
+                            <div class="mt-3 rounded-xl border border-white/5 bg-white/5 px-4 py-3 space-y-1">
+                                <p class="text-xs text-neutral-500 uppercase tracking-wide">
+                                    Post de <span class="text-neutral-300">{{ $report->post->user?->name ?? 'Auteur inconnu' }}</span>
+                                </p>
+                                @if($report->post->titre)
+                                    <p class="text-sm font-medium text-white">{{ $report->post->titre }}</p>
+                                @endif
+                                @if($report->post->texte)
+                                    <p class="text-sm text-neutral-300">{{ $report->post->texte }}</p>
+                                @endif
+                                @if($report->post->url)
+                                    <a href="{{ $report->post->url }}" target="_blank"
+                                       class="block text-xs text-blue-400 hover:underline truncate">
+                                        {{ $report->post->url }}
+                                    </a>
+                                @endif
+                            </div>
+                        @else
+                            <div class="mt-3 rounded-xl border border-white/5 bg-white/5 px-4 py-3">
+                                <p class="text-xs text-neutral-500 italic">Post déjà supprimé.</p>
+                            </div>
+                        @endif
+
                     </div>
                 @empty
                     <div class="bg-neutral-950/35 border border-white/10 backdrop-blur rounded-2xl p-8 text-center text-neutral-400">
