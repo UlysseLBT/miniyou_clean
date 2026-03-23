@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\Community;
 use App\Models\Comment;
 use App\Models\PostLike;
+use App\Models\Hashtag;
+use App\Models\Report;
 
 class Post extends Model
 {

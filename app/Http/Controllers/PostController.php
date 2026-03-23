@@ -6,19 +6,20 @@ use App\Models\Post;
 use Illuminate\Http\Request;
 use App\Models\Community;
 use App\Services\HashtagService;
+use App\Services\FeedService; // 👈 ajouté
 
 class PostController extends Controller
 {
+    public function __construct(private FeedService $feedService) {} // 👈 ajouté
+
     public function index()
     {
-        $posts = Post::with(['user', 'hashtags'])
-            ->withCount(['comments', 'likes'])
-            ->whereNull('community_id')
-            ->latest()
-            ->paginate(10);
+        $posts = $this->feedService->getForYouFeed(auth()->user()); // 👈 remplace l'ancien query
 
         return view('posts.index', compact('posts'));
     }
+
+    // --- tout le reste est inchangé ---
 
     public function create(Community $community)
     {
@@ -34,7 +35,7 @@ class PostController extends Controller
             'texte'        => ['nullable', 'string'],
             'url'          => ['nullable', 'string', 'max:2048', 'url'],
             'community_id' => ['nullable', 'exists:communities,id'],
-            'tags'         => ['nullable', 'string', 'max:200'], // 👈 ajouté
+            'tags'         => ['nullable', 'string', 'max:200'],
         ]);
 
         $post = Post::create([
@@ -45,7 +46,6 @@ class PostController extends Controller
             'url'          => $data['url'] ?? null,
         ]);
 
-        // 👇 Sync hashtags (contenu + champ dédié)
         $hashtagService->syncHashtags(
             $post,
             ($data['texte'] ?? '') . ' ' . ($data['titre'] ?? ''),
@@ -79,8 +79,6 @@ class PostController extends Controller
     public function show(Post $post, Request $request)
     {
         $page = $request->query('page', 1);
-
-        // 👇 Chargement des hashtags pour la page de détail
         $post->load('hashtags');
 
         return view('posts.show', [

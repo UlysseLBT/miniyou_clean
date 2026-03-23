@@ -50,12 +50,12 @@ Route::middleware('auth')->group(function () {
     ->middleware('auth');
 
 // Admin
-    Route::prefix('admin')->name('admin.')->middleware(['auth', 'is_admin'])->group(function () {
-    Route::get('/reports', [AdminReportController::class, 'index'])->name('reports.index');
-    Route::patch('/reports/{report}', [AdminReportController::class, 'update'])->name('reports.update');
-    });
-
-
+// Remplace les deux routes PATCH séparées par une seule
+Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
+    Route::get('/reports', [ReportController::class, 'index'])->name('admin.reports.index');
+    Route::patch('/reports/{report}', [ReportController::class, 'update'])->name('admin.reports.update');
+    Route::delete('/reports/{report}/delete-post', [ReportController::class, 'deletePost'])->name('admin.reports.delete-post');
+});
 
     // 👇 TOUTES les routes communautés
     Route::get('/communities', [CommunityController::class, 'index'])->name('communities.index');

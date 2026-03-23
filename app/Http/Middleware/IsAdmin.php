@@ -1,16 +1,17 @@
 <?php
+// app/Http/Middleware/IsAdmin.php
 
 namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
 
-class IsAdmin extends \Illuminate\Foundation\Http\Middleware\HandleInertiaRequests
+class IsAdmin
 {
     public function handle(Request $request, Closure $next)
     {
         if (!auth()->check() || !auth()->user()->is_admin) {
-            abort(403);
+            abort(403, 'Accès réservé aux administrateurs.');
         }
 
         return $next($request);

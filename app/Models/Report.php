@@ -3,25 +3,28 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Report extends Model
 {
-    protected $fillable = ['user_id', 'post_id', 'reason', 'status'];
-
+    // 👇 Ajoute ça
     const REASONS = [
-        'spam'            => 'Spam',
-        'inappropriate'   => 'Contenu inapproprié',
-        'harassment'      => 'Harcèlement',
-        'misinformation'  => 'Fausses informations',
+        'spam'           => 'Spam',
+        'harassment'     => 'Harcèlement',
+        'inappropriate'  => 'Contenu inapproprié',
+        'misinformation' => 'Désinformation',
+        'other'          => 'Autre',
     ];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
+    protected $fillable = ['post_id', 'user_id', 'reason', 'details', 'status'];
 
-    public function post()
+    public function post(): BelongsTo
     {
         return $this->belongsTo(Post::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
