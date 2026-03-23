@@ -56,6 +56,10 @@ Route::prefix('admin')->middleware(['auth', 'is_admin'])->group(function () {
     Route::patch('/reports/{report}', [ReportController::class, 'update'])->name('admin.reports.update');
     Route::delete('/reports/{report}/delete-post', [ReportController::class, 'deletePost'])->name('admin.reports.delete-post');
 });
+// routes/web.php
+Route::post('/comments/{comment}/report', [CommentController::class, 'report'])
+    ->name('comments.report')
+    ->middleware('auth');
 
     // 👇 TOUTES les routes communautés
     Route::get('/communities', [CommunityController::class, 'index'])->name('communities.index');

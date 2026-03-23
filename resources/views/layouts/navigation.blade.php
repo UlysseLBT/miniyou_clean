@@ -18,7 +18,7 @@
                         Communautés
                     </x-nav-link>
                     <x-nav-link :href="route('profile.index')" :active="request()->routeIs('profile.*')">
-                        Mon Profil
+                        Mon Activité
                     </x-nav-link>
                     
                     <form action="{{ route('users.index') }}" method="GET" class="flex items-center sm:-my-px sm:ms-2">
@@ -59,7 +59,7 @@
 
                     <x-slot name="content">
                         <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
+                            {{ __('Profil') }}
                         </x-dropdown-link>
 
                         <div class="my-1 border-t border-white/10"></div>
@@ -68,7 +68,7 @@
                             @csrf
                             <x-dropdown-link :href="route('logout')"
                                 onclick="event.preventDefault(); this.closest('form').submit();">
-                                {{ __('Log Out') }}
+                                {{ __('Se déconnecter') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>

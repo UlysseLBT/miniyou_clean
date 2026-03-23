@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\Comment;
+use App\Models\Report;
 use App\Models\Notification;
 use Illuminate\Http\Request;
 
@@ -20,7 +21,6 @@ class CommentController extends Controller
             'body'    => $data['body'],
         ]);
 
-        // Notif seulement si ce n'est pas son propre post
         if ($post->user_id !== $request->user()->id) {
             Notification::create([
                 'user_id' => $post->user_id,
@@ -45,5 +45,36 @@ class CommentController extends Controller
         $comment->delete();
 
         return back()->with('status', 'Commentaire supprimé.');
+    }
+
+    // 👇 ajouté
+    public function report(Request $request, Comment $comment)
+    {
+        if ($comment->user_id === auth()->id()) {
+            return back()->with('error', 'Vous ne pouvez pas signaler votre propre commentaire.');
+        }
+
+        $alreadyReported = Report::where('comment_id', $comment->id)
+            ->where('user_id', auth()->id())
+            ->exists();
+
+        if ($alreadyReported) {
+            return back()->with('error', 'Vous avez déjà signalé ce commentaire.');
+        }
+
+        $data = $request->validate([
+            'reason'  => ['required', 'in:spam,harassment,inappropriate,misinformation,other'],
+            'details' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        Report::create([
+            'comment_id' => $comment->id,
+            'post_id'    => null,
+            'user_id'    => auth()->id(),
+            'reason'     => $data['reason'],
+            'details'    => $data['details'] ?? null,
+        ]);
+
+        return back()->with('status', 'Commentaire signalé. Merci.');
     }
 }

@@ -1,6 +1,5 @@
-{{-- resources/views/layouts/app.blade.php --}}
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -14,7 +13,7 @@
 <body class="font-sans antialiased text-neutral-100">
     <div class="min-h-screen relative overflow-hidden bg-[#050506]">
 
-        {{-- Glows (mêmes couleurs que accueil/login/register) --}}
+        {{-- Glows --}}
         <div aria-hidden="true" class="pointer-events-none absolute inset-0">
             <div class="absolute -top-44 -left-44 h-[520px] w-[520px] rounded-full bg-red-900/35 blur-[130px]"></div>
             <div class="absolute -top-44 -right-44 h-[520px] w-[520px] rounded-full bg-amber-900/18 blur-[130px]"></div>

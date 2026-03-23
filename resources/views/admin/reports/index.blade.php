@@ -34,14 +34,19 @@
                                             'reviewed'  => 'bg-green-500/20 text-green-300 border-green-500/30',
                                             'dismissed' => 'bg-neutral-500/20 text-neutral-400 border-neutral-500/30',
                                         };
-                                        $label = match($report->status) {
+                                        $statusLabel = match($report->status) {
                                             'pending'   => 'En attente',
                                             'reviewed'  => 'Traité',
                                             'dismissed' => 'Ignoré',
                                         };
                                     @endphp
                                     <span class="inline-flex items-center rounded-full border px-2.5 py-0.5 text-[11px] font-medium {{ $badge }}">
-                                        {{ $label }}
+                                        {{ $statusLabel }}
+                                    </span>
+
+                                    {{-- Type : post ou commentaire --}}
+                                    <span class="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-2.5 py-0.5 text-[11px] font-medium text-neutral-400">
+                                        {{ $report->comment_id ? 'Commentaire' : 'Post' }}
                                     </span>
 
                                     {{-- Raison --}}
@@ -95,12 +100,33 @@
                                             </button>
                                         </form>
                                     @endif
+
+                                    {{-- Supprimer le commentaire --}}
+                                    @if($report->comment)
+                                        <form method="POST" action="{{ route('admin.reports.delete-comment', $report) }}"
+                                              onsubmit="return confirm('Supprimer ce commentaire définitivement ?')">
+                                            @csrf @method('DELETE')
+                                            <button type="submit"
+                                                    class="rounded-full px-3 py-1.5 text-xs font-medium
+                                                           bg-red-500/10 border border-red-500/30 text-red-300
+                                                           hover:bg-red-500/20 transition">
+                                                🗑 Supprimer le commentaire
+                                            </button>
+                                        </form>
+                                    @endif
                                 </div>
                             @endif
                         </div>
 
-                        {{-- Contenu du post signalé --}}
-                        @if($report->post)
+                        {{-- Contenu signalé : commentaire OU post --}}
+                        @if($report->comment)
+                            <div class="mt-3 rounded-xl border border-white/5 bg-white/5 px-4 py-3 space-y-1">
+                                <p class="text-xs text-neutral-500 uppercase tracking-wide">
+                                    Commentaire de <span class="text-neutral-300">{{ $report->comment->user?->name ?? 'Auteur inconnu' }}</span>
+                                </p>
+                                <p class="text-sm text-neutral-300">{{ $report->comment->body }}</p>
+                            </div>
+                        @elseif($report->post)
                             <div class="mt-3 rounded-xl border border-white/5 bg-white/5 px-4 py-3 space-y-1">
                                 <p class="text-xs text-neutral-500 uppercase tracking-wide">
                                     Post de <span class="text-neutral-300">{{ $report->post->user?->name ?? 'Auteur inconnu' }}</span>
@@ -120,7 +146,7 @@
                             </div>
                         @else
                             <div class="mt-3 rounded-xl border border-white/5 bg-white/5 px-4 py-3">
-                                <p class="text-xs text-neutral-500 italic">Post déjà supprimé.</p>
+                                <p class="text-xs text-neutral-500 italic">Contenu déjà supprimé.</p>
                             </div>
                         @endif
 
